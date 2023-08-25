@@ -67,6 +67,7 @@
     <ClCompile Include="Engine\SphereCollider.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameObject.h">
@@ -111,6 +112,7 @@
     <ClInclude Include="Engine\SphereCollider.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl">
@@ -121,11 +123,13 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="YoshinpeyEngin.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
