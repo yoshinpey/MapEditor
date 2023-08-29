@@ -29,7 +29,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); //ƒ
 /// <param name="lpCmdLine"></param>
 /// <param name="nCmdShow"></param>
 /// <returns></returns>
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒXiİŒv}j‚ğì¬
 	WNDCLASSEX wc;
@@ -74,19 +74,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	ShowWindow(hWnd, nCmdShow);
 
 	//Direct3D‰Šú‰»
-	HRESULT hr;
-	hr = Direct3D::Initialize(winW, winH, hWnd);
-	if (FAILED(hr))
-	{
-		PostQuitMessage(0);		//ƒGƒ‰[‚ÅƒvƒƒOƒ‰ƒ€I—¹
-	}
+	Direct3D::Initialize(winW, winH, hWnd);
 
-	//DirectInput‰Šú‰»
-	hr = Input::Initialize(hWnd);
-	if (FAILED(hr))
-	{
-		PostQuitMessage(0);		//ƒGƒ‰[‚ÅƒvƒƒOƒ‰ƒ€I—¹
-	}
+	//“ü—Í‰Šú‰»
+	Input::Initialize(hWnd);
 
 	RootJob* pRootjob;
 	pRootjob = new RootJob(nullptr);

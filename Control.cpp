@@ -14,7 +14,7 @@ Control::~Control()
 
 void Control::Initialize()
 {
-    // カメラ焦点の初期位置をマップ中央に移動
+    ///////////////// カメラ焦点の初期位置をマップ中央に移動
     XMFLOAT3 camTar = { 7.5f, 0.0f, 7.5f };
     transform_.position_ = camTar;
 }

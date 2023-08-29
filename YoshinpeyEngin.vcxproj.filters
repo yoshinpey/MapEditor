@@ -115,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Control.h" />
+    <ClInclude Include="Engine\Global.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl">
