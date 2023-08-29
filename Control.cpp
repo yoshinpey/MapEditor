@@ -14,10 +14,9 @@ Control::~Control()
 
 void Control::Initialize()
 {
-    // カメラ初期位置をマップ中央に移動
-    transform_.position_.x = 7.5f;
-    transform_.position_.y = 0.0f;
-    transform_.position_.z = 6.0f;
+    // カメラ焦点の初期位置をマップ中央に移動
+    XMFLOAT3 camTar = { 7.5f, 0.0f, 7.5f };
+    transform_.position_ = camTar;
 }
 
 void Control::Update()
@@ -43,21 +42,20 @@ void Control::Update()
     // カメラ上昇
     if (Input::IsKey(DIK_SPACE))
     {
-        transform_.position_.y += 0.1f;
+        transform_.position_.y += 0.05f;
     }
     // カメラ下降
     if (Input::IsKey(DIK_LSHIFT))
     {
-        transform_.position_.y -= 0.1f;
+        transform_.position_.y -= 0.05f;
     }
 
     // 位置座標を移動ベクトルに変換
     XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
 
     // 回転行列を作成、デグリーをラジアンに変換
-    XMMATRIX mRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(transform_.rotate_.x),
-        XMConvertToRadians(transform_.rotate_.y),
-        0.0f);
+    XMMATRIX mRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
+    mRot *= XMMatrixRotationX(XMConvertToRadians(transform_.rotate_.x));
 
     // 移動ベクトルを変換
     XMVECTOR vMoveForward = XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);        // Z方向
