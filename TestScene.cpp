@@ -2,6 +2,7 @@
 #include "Engine/SceneManager.h"
 
 #include "TestScene.h"
+#include "Control.h"
 #include "Stage.h"
 
 TestScene::TestScene(GameObject* parent)
@@ -12,6 +13,7 @@ TestScene::TestScene(GameObject* parent)
 void TestScene::Initialize()
 {
 	Instantiate<Stage>(this);
+	Instantiate<Control>(this);
 }
 
 void TestScene::Update()
@@ -21,8 +23,6 @@ void TestScene::Update()
 	//	SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 	//	pSceneManager->ChangeScene(SCENE_ID_TEST);
 	//}
-
-	//GameObject* dbTest = FindObject("SceneManager");
 }
 
 void TestScene::Draw()

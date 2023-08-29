@@ -68,6 +68,7 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="Control.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameObject.h">
@@ -113,6 +114,7 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="Control.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl">
