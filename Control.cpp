@@ -30,14 +30,27 @@ void Control::Update()
     {
         transform_.rotate_.y += 1.0f;
     }
-    if (Input::IsKey(DIK_UP)) // カメラ前回転
+    if (Input::IsKey(DIK_UP))
     {
         transform_.rotate_.x -= 1.0f;
+
+        // 下回転の角度制限
+        if (transform_.rotate_.x <= -30.0f)
+        {
+            transform_.rotate_.x = -30.0f;
+        }
     }
-    if (Input::IsKey(DIK_DOWN)) // カメラ後回転
+    if (Input::IsKey(DIK_DOWN))
     {
         transform_.rotate_.x += 1.0f;
+
+        // 上回転の角度制限
+        if (transform_.rotate_.x >= 50.0f)
+        {
+            transform_.rotate_.x = 50.0f;
+        }
     }
+
 
     // カメラ上昇
     if (Input::IsKey(DIK_SPACE))
@@ -54,8 +67,7 @@ void Control::Update()
     XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
 
     // 回転行列を作成、デグリーをラジアンに変換
-    XMMATRIX mRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
-    mRot *= XMMatrixRotationX(XMConvertToRadians(transform_.rotate_.x));
+    XMMATRIX mRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(transform_.rotate_.x),XMConvertToRadians(transform_.rotate_.y),0.0f);
 
     // 移動ベクトルを変換
     XMVECTOR vMoveForward = XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);        // Z方向
