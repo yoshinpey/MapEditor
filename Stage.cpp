@@ -1,23 +1,38 @@
 #include <string>
 
 #include "Engine/Model.h"
+#include "Engine/Debug.h"
 
 #include "Stage.h"
 
-//コンストラクタ
+
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hModel_{0,0,0,0,0}, width_(15), height_(15)
+    :GameObject(parent, "Stage")
 {
+    //乱数初期化
+    srand((unsigned int)time(nullptr));
+
+    //モデル初期化
+    for (int i = 0; i < MODEL_NUM; i++) 
+        hModel_[i] = -1;
+    
+    //構造体初期化
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            table_[x][z] = { DEFAULT, DEFAULT };
+        }
+    }
 }
 
-//デストラクタ
 Stage::~Stage()
 {
 }
 
-//初期化
 void Stage::Initialize()
 {
+    //ファイルパス
     std::string failBase = "Assets/";
     std::string modelName[] =
     {
@@ -25,141 +40,66 @@ void Stage::Initialize()
         "BoxBrick.fbx",
         "BoxGrass.fbx",
         "BoxSand.fbx",
-        "BoxWater.fbx"
+        "BoxWater.fbx",
     };
-    
+
     //モデルデータのロード
-    for (int i = 0; i < MODEL_NUM; i++)
+    for (int i = 0; i <TYPEMAX; i++)
     {
         hModel_[i] = Model::Load(failBase + modelName[i]);
-        assert(hModel_ >= 0);
-    }
-}
-
-//更新
-void Stage::Update()
-{
-}
-
-//描画
-void Stage::Draw()
-{
-    Transform blockTrans;
-
-    for (int x = 0; x < width_; x++)
-    {
-        for (int z = 0; z < height_; z++)
-        {
-            blockTrans.position_.x = x;
-            blockTrans.position_.z = z;
-
-            Model::SetTransform(hModel_, blockTrans);
-            Model::Draw(hModel_);
-        }
-    }
-}
-
-//開放
-void Stage::Release()
-{
-}
-
-//pacman
-#if 0
-#include "Stage.h"
-
-#include "Engine/Model.h"
-#include "Engine/CsvReader.h"
-
-//コンストラクタ
-Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hModel_{ -1,-1 }, table_(nullptr)
-{
-    CsvReader csv;
-    csv.Load("map_01.csv");
-
-    width_ = csv.GetWidth();    //１行に何個データがあるか
-    height_ = csv.GetHeight();   //データが何行あるか
-
-    table_ = new int* [width_];
-
-    for (int x = 0; x < width_; x++)
-    {
-        table_[x] = new int[height_];
-        for (int z = 0; z < height_; z++)
-        {
-            table_[x][height_ - 1 - z] = csv.GetValue(x, z);
-        }
-    }
-}
-
-//デストラクタ
-Stage::~Stage()
-{
-}
-
-//初期化
-void Stage::Initialize()
-{
-    const char* fileName[] =
-    {
-        "Floor.fbx",
-        "Wall.fbx"
-    };
-
-    //モデルデータのロード
-    for (int i = 0; i < TYPE_MAX; i++)
-    {
-        hModel_[i] = Model::Load(fileName[i]);
         assert(hModel_[i] >= 0);
     }
 
-
-}
-
-//更新
-void Stage::Update()
-{
-}
-
-//描画
-void Stage::Draw()
-{
-    Transform blockTrans;
-
-    for (int x = 0; x < width_; x++)
+    //モデル読み込み
+    for (int x = 0; x < SIZE_X; x++) 
     {
-        for (int z = 0; z < height_; z++)
+        for (int z = 0; z < SIZE_Z; z++) 
         {
-            blockTrans.position_.x = x;
-            blockTrans.position_.z = z;
-
-            int type = table_[x][z];
-
-            Model::SetTransform(hModel_[type], blockTrans);
-            Model::Draw(hModel_[type]);
+            SetBlockType(x, z, (BOX_TYPE)(rand() % (int)TYPEMAX));
+            SetBlockHeight(x, z, rand() % SIZE_Y);
         }
     }
 
 }
 
-//開放
-void Stage::Release()
+void Stage::Update()
 {
-    for (int x = 0; x < width_; x++)
-    {
-        delete[] table_[x];
-    }
-    delete[] table_;
 }
 
-//壁床判定
-bool Stage::IsWall(int x, int z)
+void Stage::Draw()
 {
-    if (table_[x][z] == 0)
+    for (int x = 0; x < SIZE_X; x++)
     {
-        return true;
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            for (int y = 0; y < table_[x][z].height_; y++)
+            {
+                Transform blockTrans;
+                blockTrans.position_.x = x;
+                blockTrans.position_.z = z;
+                blockTrans.position_.y = y;
+
+                int type = table_[x][z].type_;
+
+                Model::SetTransform(hModel_[type], blockTrans);
+                Model::Draw(hModel_[type]);
+            }
+
+        }
     }
-    return false;
 }
-#endif
+
+void Stage::Release()
+{
+}
+
+void Stage::SetBlockType(int _x, int _z, BOX_TYPE _type)
+{
+    table_[_x][_z].type_ = _type;
+}
+
+
+void Stage::SetBlockHeight(int _x, int _z, int _height)
+{
+    table_[_x][_z].height_ = _height;
+}

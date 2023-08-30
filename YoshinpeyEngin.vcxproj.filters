@@ -69,6 +69,9 @@
     </ClCompile>
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Control.cpp" />
+    <ClCompile Include="Engine\Debug.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameObject.h">
@@ -116,6 +119,9 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="Engine\Global.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Debug.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,84 +1,54 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include <time.h>
 
-enum
+namespace 
 {
-    TYPE_DEFAULT=0,
-    TYPE_BRICK,
-    TYPE_GRASS,
-    TYPE_SAND,
-    TYPE_WATER,
-    TYPE_MAX
-};
+    enum BOX_TYPE
+    {
+        DEFAULT = 0,
+        BRICK,
+        GRASS,
+        SAND,
+        WATER,
+        TYPEMAX
+    };
+    const int MODEL_NUM{ TYPEMAX };     //モデル数
+
+    //限界値
+    const int SIZE_X{ 15 };
+    const int SIZE_Z{ 15 };
+    const int SIZE_Y{ 5 };
+}
 
 //ステージを管理するクラス
 class Stage : public GameObject
 {
-    int hModel_[TYPE_MAX];      //モデル
-    int sizeY_, sizeX_, sizeZ_; //ステージサイズ
-    int** table_;               //地面
+    //ひとマスの情報
+    struct
+    {
+        BOX_TYPE type_;
+        int height_;
+    }table_[SIZE_X][SIZE_Z];
+
+    int hModel_[TYPEMAX];      //モデル
+
 public:
     //コンストラクタ
     Stage(GameObject* parent);
-
     //デストラクタ
     ~Stage();
-
     //初期化
     void Initialize() override;
-
     //更新
     void Update() override;
-
     //描画
     void Draw() override;
-
-    //開放
-    void Release() override;
-};
-
-//pacman
-#if 0
-#pragma once
-#include "Engine/GameObject.h"
-
-enum
-{
-    TYPE_FLOOR,
-    TYPE_WALL,
-    TYPE_MAX,
-};
-
-//地面を管理するクラス
-class Stage : public GameObject
-{
-    int hModel_[TYPE_MAX];
-    int** table_;
-    int height_;
-    int width_;
-public:
-    //コンストラクタ
-    Stage(GameObject* parent);
-
-    //デストラクタ
-    ~Stage();
-
-    //初期化
-    void Initialize() override;
-
-    //更新
-    void Update() override;
-
-    //描画
-    void Draw() override;
-
     //開放
     void Release() override;
 
-    //床と壁を判定するためのゲッター(通れるor通れない)
-    //引数     ：ｘ,ｚ        調べる位置
-    //戻り値   ：             座標
-    bool IsWall(int x, int z);
-
+    //配置するブロックの種類
+    void SetBlockType(int _x, int _z, BOX_TYPE _type);
+    //配置するブロックの高さ
+    void SetBlockHeight(int _x, int _z, int _height);
 };
-#endif
