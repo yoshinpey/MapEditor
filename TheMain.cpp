@@ -7,6 +7,7 @@
 #include "Engine/Input.h"
 #include "Engine/Rootjob.h"
 #include "Engine/Model.h"
+#include "DirectXCollision.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -38,9 +39,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	XMVECTOR P3 = XMVectorSet(3, 0, 1, 0);
 	float dist = 0.0;
 
-	//bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
+	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
-	int a;
+	float a= dist;
 
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
