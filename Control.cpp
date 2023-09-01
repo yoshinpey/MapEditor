@@ -21,36 +21,16 @@ void Control::Initialize()
 
 void Control::Update()
 {
-    // カメラ回転
-    if (Input::IsKey(DIK_LEFT))
+    if (Input::IsKey(DIK_LCONTROL)&&Input::IsMouseButton(0))
     {
-        transform_.rotate_.y -= 1.0f;
+        //Mouseで操作
+        UseMouse();
     }
-    if (Input::IsKey(DIK_RIGHT))
+    else
     {
-        transform_.rotate_.y += 1.0f;
+        //キーボードで操作
+        UseKey();
     }
-    if (Input::IsKey(DIK_UP))
-    {
-        transform_.rotate_.x -= 1.0f;
-
-        // 下回転の角度制限
-        if (transform_.rotate_.x <= -30.0f)
-        {
-            transform_.rotate_.x = -30.0f;
-        }
-    }
-    if (Input::IsKey(DIK_DOWN))
-    {
-        transform_.rotate_.x += 1.0f;
-
-        // 上回転の角度制限
-        if (transform_.rotate_.x >= 50.0f)
-        {
-            transform_.rotate_.x = 50.0f;
-        }
-    }
-
 
     // カメラ上昇
     if (Input::IsKey(DIK_SPACE))
@@ -119,4 +99,70 @@ void Control::Draw()
 
 void Control::Release()
 {
+}
+
+void Control::UseMouse()
+{
+    // マウスの移動量を取得
+    XMFLOAT3 mouseMove = Input::GetMouseMove();
+
+    // マウスの移動量に基づいてカメラを回転させる
+    transform_.rotate_.y += (mouseMove.x) * 0.3f; // 水平方向の回転
+    transform_.rotate_.x += (mouseMove.y) * 0.3f; // 垂直方向の回転
+
+    // 垂直方向の回転を制限する
+    if (transform_.rotate_.x > 60.0f)
+        transform_.rotate_.x = 60.0f;
+    else if (transform_.rotate_.x < -60.0f)
+        transform_.rotate_.x = -60.0f;
+
+    // カメラの回転行列を計算
+    XMMATRIX mRotX = XMMatrixRotationX(XMConvertToRadians(transform_.rotate_.x));
+    XMMATRIX mRotY = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
+    XMMATRIX mView = mRotX * mRotY;
+
+    // カメラの位置と焦点を設定
+    XMFLOAT3 camPosFloat3;
+    XMFLOAT3 camTargetFloat3;
+    XMVECTOR camPosVector = XMVectorSet(0, 0, 0, 1); // カメラの位置
+    camPosVector = XMVector3TransformCoord(camPosVector, mView);
+    XMVECTOR camTargetVector = XMVectorSet(0, 0, 1, 1); // カメラの焦点
+    camTargetVector = XMVector3TransformCoord(camTargetVector, mView);
+    XMStoreFloat3(&camPosFloat3, camPosVector);
+    XMStoreFloat3(&camTargetFloat3, camTargetVector);
+    Camera::SetPosition(camPosFloat3);
+    Camera::SetTarget(camTargetFloat3);
+}
+
+void Control::UseKey()
+{
+    // カメラ回転
+    if (Input::IsKey(DIK_LEFT))
+    {
+        transform_.rotate_.y -= 1.0f;
+    }
+    if (Input::IsKey(DIK_RIGHT))
+    {
+        transform_.rotate_.y += 1.0f;
+    }
+    if (Input::IsKey(DIK_UP))
+    {
+        transform_.rotate_.x -= 1.0f;
+
+        // 下回転の角度制限
+        if (transform_.rotate_.x <= -30.0f)
+        {
+            transform_.rotate_.x = -30.0f;
+        }
+    }
+    if (Input::IsKey(DIK_DOWN))
+    {
+        transform_.rotate_.x += 1.0f;
+
+        // 上回転の角度制限
+        if (transform_.rotate_.x >= 50.0f)
+        {
+            transform_.rotate_.x = 50.0f;
+        }
+    }
 }

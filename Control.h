@@ -23,4 +23,10 @@ public:
 
     //開放
     void Release() override;
+
+    //マウスで動かす場合
+    void UseMouse();
+
+    //キーボードで動かす場合
+    void UseKey();
 };

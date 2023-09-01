@@ -32,16 +32,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); //É
 /// <returns></returns>
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
-	XMVECTOR beginP = XMVectorSet(1, 5, 1, 0);
-	XMVECTOR dirVec = XMVectorSet(0, -1, 0, 0);
-	XMVECTOR P1 = XMVectorSet(0, 0, 0, 0);
-	XMVECTOR P2 = XMVectorSet(0, 0, 3, 0);
-	XMVECTOR P3 = XMVectorSet(3, 0, 1, 0);
-	float dist = 0.0;
+	//XMVECTOR beginP = XMVectorSet(1, 5, 1, 0);
+	//XMVECTOR dirVec = XMVectorSet(0, -1, 0, 0);
+	//XMVECTOR P1 = XMVectorSet(0, 0, 0, 0);
+	//XMVECTOR P2 = XMVectorSet(0, 0, 3, 0);
+	//XMVECTOR P3 = XMVectorSet(3, 0, 1, 0);
+	//float dist = 0.0;
 
-	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
+	//bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
-	float a= dist;
+	//float a= dist;
 
 	//ÉEÉBÉìÉhÉEÉNÉâÉXÅiê›åvê}ÅjÇçÏê¨
 	WNDCLASSEX wc;
