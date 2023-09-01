@@ -39,6 +39,17 @@ class Fbx
 		XMVECTOR normal;			// 法線ベクトル
 	};
 
+	struct RayCastData
+	{
+		XMFLOAT4 Start;
+		XMFLOAT4 dir;
+		bool hit;
+	};
+
+	VERTEX* pVertices_;
+	int** ppIndex_;
+
+
 	int vertexCount_;				// 頂点数
 	int polygonCount_;				// ポリゴン数
 	int materialCount_;				// マテリアルの個数
@@ -66,4 +77,6 @@ public:
 	HRESULT Load(std::string fileName);		// FBXファイルの読み込み
 	void Draw(Transform& transform);		// FBXモデルの描画
 	void Release();							// メモリの解放
+
+	void RayCast(RayCastData& rayData);
 };
