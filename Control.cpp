@@ -23,12 +23,12 @@ void Control::Update()
 {
     if (Input::IsKey(DIK_LCONTROL)&&Input::IsMouseButton(0))
     {
-        //Mouseで操作
+        // Mouseで操作
         UseMouse();
     }
     else
     {
-        //キーボードで操作
+        // キーボードで操作
         UseKey();
     }
 
