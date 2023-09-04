@@ -51,4 +51,6 @@ public:
     void SetBlockType(int _x, int _z, BOX_TYPE _type);
     //配置するブロックの高さ
     void SetBlockHeight(int _x, int _z, int _height);
+    //レイキャスト
+    int GetModelHandle() { return hModel_[_type]; }
 };
