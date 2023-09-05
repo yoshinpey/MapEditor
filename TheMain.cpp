@@ -11,6 +11,7 @@
 
 #include "DirectXCollision.h"
 #include "resource.h"
+#include "Stage.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -20,6 +21,9 @@
 const char* WIN_CLASS_NAME = "SampleGame";	//ウィンドウクラス名
 const int WINDOW_WIDTH = 800;				//ウィンドウの幅
 const int WINDOW_HEIGHT = 600;				//ウィンドウの高さ
+
+//グローバル変数
+RootJob* pRootjob = nullptr;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); //ウィンドウプロシージャ
@@ -94,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	//入力初期化
 	Input::Initialize(hWnd);
 
-	RootJob* pRootjob;
+	//ルートジョブ作成
 	pRootjob = new RootJob(nullptr);
 	pRootjob->Initialize();
 
@@ -103,7 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	Camera::SetPosition(XMFLOAT3(0, 4, -10));
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
-
+	//ダイアログ
 	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 	//メッセージループ（何か起きるのを待つ）
@@ -189,12 +193,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-//ダイアログ
+//本物のダイアログプロシージャ
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-	switch (msg)
-	{
-
-	}
-	return FALSE;
+	Stage* pStage = (Stage*)pRootjob->FindObject("Stage");
+	return pStage->DialogProc(hDlg, msg, wp, lp);
 }

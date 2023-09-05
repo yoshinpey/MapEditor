@@ -3,6 +3,7 @@
 #include "Engine/Model.h"
 #include "Engine/Debug.h"
 
+#include "resource.h"
 #include "Stage.h"
 
 
@@ -102,4 +103,25 @@ void Stage::SetBlockType(int _x, int _z, BOX_TYPE _type)
 void Stage::SetBlockHeight(int _x, int _z, int _height)
 {
     table_[_x][_z].height_ = _height;
+}
+
+//ダイアログ
+BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        //ラジオボタン初期化
+        SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
+
+        //コンボボックス初期化
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, DEFAULT, (LPARAM)"デフォルト");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, BRICK, (LPARAM)"レンガ");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, GRASS, (LPARAM)"草原");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, SAND, (LPARAM)"砂地");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, WATER, (LPARAM)"水");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_SETCURSEL, TYPEMAX, 0);
+        return TRUE;
+    }
+    return FALSE;
 }

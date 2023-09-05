@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include <time.h>
+#include <Windows.h>
 
 namespace 
 {
@@ -32,6 +33,8 @@ class Stage : public GameObject
     }table_[SIZE_X][SIZE_Z];
 
     int hModel_[TYPEMAX];      //モデル
+    int mode_;      //0:上げる 1:下げる 2:種類を変える 
+    int select_;    //種類
 
 public:
     //コンストラクタ
@@ -51,6 +54,9 @@ public:
     void SetBlockType(int _x, int _z, BOX_TYPE _type);
     //配置するブロックの高さ
     void SetBlockHeight(int _x, int _z, int _height);
+    //ダイアログ
+    BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
     //レイキャスト
     //int GetModelHandle() { return hModel_[_type]; }
 };
