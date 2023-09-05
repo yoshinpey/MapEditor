@@ -23,7 +23,7 @@ void Control::Initialize()
 
 void Control::Update()
 {
-    if (Input::IsKey(DIK_LCONTROL)&&Input::IsMouseButton(0))
+    if (Input::IsMouseButton(0))
     {
         // Mouseで操作
         UseMouse();
@@ -95,6 +95,7 @@ void Control::Update()
     Camera::SetTarget(camTar);
 
     //レイキャスト
+    /*
     Stage* pStage = (Stage*)FindObject("Stage");    //ステージオブジェクトを探す
     int hGroundModel = pStage->GetModelHandle();    //モデル番号を取得
 
@@ -102,13 +103,14 @@ void Control::Update()
     data.start = transform_.position_;   //レイの発射位置
     data.dir = XMFLOAT3(0, -1, 0);       //レイの方向
     Model::RayCast(hGroundModel, &data); //レイを発射
-
+    
     //レイが当たったら
     if (data.hit)
     {
         //その分位置を下げる
         transform_.position_.y -= data.dist;
     }
+    */
 }
 
 void Control::Draw()
