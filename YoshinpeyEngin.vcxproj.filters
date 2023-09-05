@@ -124,6 +124,9 @@
     <ClInclude Include="Engine\Debug.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>リソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl">

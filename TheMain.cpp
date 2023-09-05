@@ -2,12 +2,15 @@
 #include <Windows.h>
 #include <d3d11.h>
 #include <stdlib.h>
+
 #include "Engine/Direct3D.h"
 #include "Engine/Camera.h"
 #include "Engine/Input.h"
 #include "Engine/Rootjob.h"
 #include "Engine/Model.h"
+
 #include "DirectXCollision.h"
+#include "resource.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -20,7 +23,7 @@ const int WINDOW_HEIGHT = 600;				//ウィンドウの高さ
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); //ウィンドウプロシージャ
-
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 /// <summary>
 /// エントリーポイント
@@ -100,6 +103,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	Camera::SetPosition(XMFLOAT3(0, 4, -10));
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
+
+	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
@@ -182,4 +187,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+//ダイアログ
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+
+	}
+	return FALSE;
 }
