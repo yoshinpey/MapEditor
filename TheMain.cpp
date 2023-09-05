@@ -42,6 +42,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 
 	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
+	//////ディスプレイのサイズを取得
+	int displayWidth = GetSystemMetrics(SM_CXSCREEN);
+	int displayHeight = GetSystemMetrics(SM_CYSCREEN);
 
 
 	//ウィンドウクラス（設計図）を作成
