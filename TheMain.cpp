@@ -29,16 +29,10 @@ RootJob* pRootjob = nullptr;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); //ウィンドウプロシージャ
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
-/// <summary>
-/// エントリーポイント
-/// </summary>
-/// <param name="hInstance"></param>
-/// <param name="hPrevInst"></param>
-/// <param name="lpCmdLine"></param>
-/// <param name="nCmdShow"></param>
-/// <returns></returns>
+//エントリーポイント
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+	//トライアングルテスト
 	XMVECTOR beginP = XMVectorSet(1, 5, 1, 0);
 	XMVECTOR dirVec = XMVectorSet(0, -1, 0, 0);
 	XMVECTOR P1 = XMVectorSet(0, 0, 0, 0);
@@ -48,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 
 	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
-	//float a= dist;
+
 
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
@@ -107,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	Camera::SetPosition(XMFLOAT3(0, 4, -10));
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
-	//ダイアログ
+	//ダイアログ作成
 	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 	//メッセージループ（何か起きるのを待つ）
@@ -121,7 +115,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
 		//メッセージなし
 		else
 		{
@@ -189,13 +182,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);		//プログラム終了
 		return 0;
+	case WM_MOUSEMOVE:
+		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));		//マウス座標セット
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-//本物のダイアログプロシージャ
+//ダイアログプロシージャ
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-	Stage* pStage = (Stage*)pRootjob->FindObject("Stage");
-	return pStage->DialogProc(hDlg, msg, wp, lp);
+    Stage* pStage = (Stage*)pRootjob->FindObject("Stage");
+    return pStage->DialogProc(hDlg, msg, wp, lp);
 }
