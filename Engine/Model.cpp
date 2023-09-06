@@ -64,3 +64,8 @@ void Model::Release()
 	}
 	modelList.clear();
 }
+
+void Model::RayCast(int hModel_, RayCastData& rayData)
+{
+	modelList[hModel_]->pfbx_->RayCast(rayData);
+}

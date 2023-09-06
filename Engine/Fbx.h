@@ -15,6 +15,13 @@ using std::vector;
 
 class Texture;
 
+struct RayCastData
+{
+	XMFLOAT4 Start;
+	XMFLOAT4 dir;
+	bool hit;
+};
+
 class Fbx
 {
 	// マテリアル
@@ -39,12 +46,7 @@ class Fbx
 		XMVECTOR normal;			// 法線ベクトル
 	};
 
-	struct RayCastData
-	{
-		XMFLOAT4 Start;
-		XMFLOAT4 dir;
-		bool hit;
-	};
+
 
 	VERTEX* pVertices_;
 	int** ppIndex_;

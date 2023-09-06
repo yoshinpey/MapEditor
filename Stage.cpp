@@ -2,9 +2,11 @@
 
 #include "Engine/Model.h"
 #include "Engine/Debug.h"
+#include "Engine/Input.h"
 
 #include "resource.h"
 #include "Stage.h"
+
 
 
 Stage::Stage(GameObject* parent)
@@ -65,6 +67,36 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+    float w = (float)WINDOW_WIDTH/2.0f;
+    float h = (float)WINDOW_HEIGHT/2.0f;
+    //offsetx,y = 0;
+    //minZ=0,maxZ =1
+    XMMATRIX vp =
+    {
+        w,  0,  0,  0,
+        0,  -h, 0,  0,
+        0,  0,  1,  0,
+        w,  h,  0,  1
+    };
+    //ビューポート
+    XMMATRIX invVP = ;
+
+    //プロジェクション変換
+    XMMATRIX InvProj = ;
+    
+    //ビュー変換
+    XMMATRIX invView = ;
+    XMFLOAT3 mousePosFront = Input::GetMousePosition();
+    mousePosFront.z = 0.0f;
+    XMFLOAT3 mousePosBack = Input::GetMousePosition();
+    mousePosBack.z = 1.0f;
+    //マウス位置前をベクトルに変換
+    //それにinvVP、InvProj、invViewをかける
+    //マウス後ろ位置をベクトルに変換
+    //それにinvVP、InvProj、invViewをかける
+    //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
+    //レイが当たったらブレークポイント
+
 }
 
 void Stage::Draw()

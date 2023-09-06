@@ -32,15 +32,6 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 //エントリーポイント
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
-	//トライアングルテスト
-	XMVECTOR beginP = XMVectorSet(1, 5, 1, 0);
-	XMVECTOR dirVec = XMVectorSet(0, -1, 0, 0);
-	XMVECTOR P1 = XMVectorSet(0, 0, 0, 0);
-	XMVECTOR P2 = XMVectorSet(0, 0, 3, 0);
-	XMVECTOR P3 = XMVectorSet(3, 0, 1, 0);
-	float dist = 0.0;
-
-	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
 	//////ディスプレイのサイズを取得
 	int displayWidth = GetSystemMetrics(SM_CXSCREEN);
