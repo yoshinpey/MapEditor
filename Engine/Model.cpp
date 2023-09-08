@@ -67,5 +67,26 @@ void Model::Release()
 
 void Model::RayCast(int hModel_, RayCastData& rayData)
 {
+	//モデルのトランスフォームをカリキュレーション
+	modelList[hModel_]->transform_.Calclation();
+	//ワールド行列の逆行列
+	XMMATRIX wInv = XMMatrixInverse(nullptr, modelList[hModel_]->transform_.GetWorldMatrix());
+	//レイの通過点を求める(モデル空間でのレイの方向ベクトルを求める)
+	XMVECTOR vpass{
+		rayData.Start.x + rayData.dir.x,
+		rayData.Start.y + rayData.dir.y,
+		rayData.Start.z + rayData.dir.z,
+		rayData.Start.w + rayData.dir.w,
+	};
+	//rayData.Startをモデル空間に変換
+	XMVECTOR vstart = XMLoadFloat4(&rayData.Start);
+	vstart = XMVector3TransformCoord(vstart, wInv);
+	//始点から方向ベクトルを伸ばした先(通過点)
+	vstart = XMVector3TransformCoord(vpass, wInv);
+	//ベクトルにする
+	vpass = vpass - vstart;
+	XMStoreFloat4(&rayData.dir, vpass);
+
+	//指定したモデル番号FBXにレイキャスト
 	modelList[hModel_]->pfbx_->RayCast(rayData);
 }

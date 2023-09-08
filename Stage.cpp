@@ -3,6 +3,7 @@
 #include "Engine/Model.h"
 #include "Engine/Debug.h"
 #include "Engine/Input.h"
+#include "Engine/Camera.h"
 
 #include "resource.h"
 #include "Stage.h"
@@ -67,8 +68,8 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-    float w = (float)WINDOW_WIDTH/2.0f;
-    float h = (float)WINDOW_HEIGHT/2.0f;
+    float w = (float)800/2.0f;
+    float h = (float)600/2.0f;
     //offsetx,y = 0;
     //minZ=0,maxZ =1
     XMMATRIX vp =
@@ -79,24 +80,54 @@ void Stage::Update()
         w,  h,  0,  1
     };
     //ビューポート
-    XMMATRIX invVP = ;
+    XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
 
     //プロジェクション変換
-    XMMATRIX InvProj = ;
+    XMMATRIX InvProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
     
     //ビュー変換
-    XMMATRIX invView = ;
+    XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+
     XMFLOAT3 mousePosFront = Input::GetMousePosition();
     mousePosFront.z = 0.0f;
     XMFLOAT3 mousePosBack = Input::GetMousePosition();
     mousePosBack.z = 1.0f;
-    //マウス位置前をベクトルに変換
-    //それにinvVP、InvProj、invViewをかける
-    //マウス後ろ位置をベクトルに変換
-    //それにinvVP、InvProj、invViewをかける
-    //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
-    //レイが当たったらブレークポイント
 
+    //マウス位置前をベクトルに変換
+    XMVECTOR vMousePosFront = XMLoadFloat3(&mousePosFront);
+    //それにinvVP、InvProj、invViewをかける
+    vMousePosFront = XMVector3TransformCoord(vMousePosFront, invVP * InvProj * invView);
+    //マウス後ろ位置をベクトルに変換
+    XMVECTOR vMousePosBack = XMLoadFloat3(&mousePosBack);
+    //それにinvVP、InvProj、invViewをかける
+    vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
+
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            for (int y = 0; y < table_[x][z].height_+1; y++)
+            {
+                //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
+                RayCastData data;
+                XMStoreFloat4(&data.Start, vMousePosFront);
+                XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
+                Transform blockTrans;
+                blockTrans.position_.x = x;
+                blockTrans.position_.y = y;
+                blockTrans.position_.z = z;
+
+                Model::SetTransform(hModel_[0], blockTrans);
+                Model::RayCast(hModel_[0],data);
+
+                //レイが当たったらブレークポイント
+                if (data.hit)
+                {
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void Stage::Draw()
