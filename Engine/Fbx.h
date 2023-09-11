@@ -17,8 +17,9 @@ class Texture;
 
 struct RayCastData
 {
-	XMFLOAT4 Start;
+	XMFLOAT4 start;
 	XMFLOAT4 dir;
+	float dist;
 	bool hit;
 };
 
@@ -80,5 +81,5 @@ public:
 	void Draw(Transform& transform);		// FBXモデルの描画
 	void Release();							// メモリの解放
 
-	void RayCast(RayCastData& rayData);
+	void RayCast(RayCastData *rayData);
 };

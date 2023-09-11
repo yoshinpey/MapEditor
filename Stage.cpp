@@ -25,7 +25,7 @@ Stage::Stage(GameObject* parent)
     {
         for (int z = 0; z < SIZE_Z; z++)
         {
-            table_[x][z] = { DEFAULT, DEFAULT };
+            table_[x][z] = { DEFAULT, 1 };
         }
     }
 }
@@ -59,8 +59,8 @@ void Stage::Initialize()
     {
         for (int z = 0; z < SIZE_Z; z++) 
         {
-            SetBlockType(x, z, (BOX_TYPE)(rand() % (int)TYPEMAX));
-            SetBlockHeight(x, z, rand() % SIZE_Y);
+            SetBlockType(x, z, DEFAULT);
+            SetBlockHeight(x, z, 1);
         }
     }
 
@@ -75,7 +75,7 @@ void Stage::Update()
     XMMATRIX vp =
     {
         w,  0,  0,  0,
-        0,  -h, 0,  0,
+        0,  -w, 0,  0,
         0,  0,  1,  0,
         w,  h,  0,  1
     };
@@ -110,8 +110,9 @@ void Stage::Update()
             {
                 //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
                 RayCastData data;
-                XMStoreFloat4(&data.Start, vMousePosFront);
+                XMStoreFloat4(&data.start, vMousePosFront);
                 XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
+
                 Transform blockTrans;
                 blockTrans.position_.x = x;
                 blockTrans.position_.y = y;
@@ -123,6 +124,7 @@ void Stage::Update()
                 //レイが当たったらブレークポイント
                 if (data.hit)
                 {
+                    table_[x][y].height_++;
                     break;
                 }
             }

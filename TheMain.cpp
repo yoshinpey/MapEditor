@@ -69,8 +69,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 		WS_OVERLAPPEDWINDOW,	//スタイル（普通のウィンドウ）
 		CW_USEDEFAULT,			//表示位置左（おまかせ）
 		CW_USEDEFAULT,			//表示位置上（おまかせ）
-		winW,					//ウィンドウ幅
-		winH,					//ウィンドウ高さ
+		WINDOW_WIDTH,					//ウィンドウ幅
+		WINDOW_HEIGHT,					//ウィンドウ高さ
 		NULL,					//親ウインドウ（なし）
 		NULL,					//メニュー（なし）
 		hInstance,				//インスタンス
