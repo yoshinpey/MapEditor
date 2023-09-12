@@ -1,6 +1,7 @@
 #include <string>
 
 #include "Engine/Model.h"
+#include "Engine/Fbx.h"
 #include "Engine/Debug.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
@@ -68,8 +69,11 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-    float w = (float)800/2.0f;
-    float h = (float)600/2.0f;
+    if (!Input::IsMouseButtonDown(0)) {
+        return;
+    }
+    float w = (float)(Direct3D::scrWidth / 2.0f);
+    float h = (float)(Direct3D::scrHeight / 2.0f);
     //offsetx,y = 0;
     //minZ=0,maxZ =1
     XMMATRIX vp =
@@ -109,7 +113,7 @@ void Stage::Update()
             for (int y = 0; y < table_[x][z].height_+1; y++)
             {
                 //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
-                RayCastData data;
+                RayCastData data{};
                 XMStoreFloat4(&data.start, vMousePosFront);
                 XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
 
@@ -121,7 +125,7 @@ void Stage::Update()
                 Model::SetTransform(hModel_[0], blockTrans);
                 Model::RayCast(hModel_[0],data);
 
-                //レイが当たったらブレークポイント
+                //レイが当たったら伸ばす
                 if (data.hit)
                 {
                     table_[x][y].height_++;
@@ -138,7 +142,7 @@ void Stage::Draw()
     {
         for (int z = 0; z < SIZE_Z; z++)
         {
-            for (int y = 0; y < table_[x][z].height_; y++)
+            for (int y = 0; y < table_[x][z].height_ + 1; y++)
             {
                 Transform blockTrans;
                 blockTrans.position_.x = x;

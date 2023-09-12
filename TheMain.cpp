@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <d3d11.h>
 #include <stdlib.h>
+#include <DirectXCollision.h>
 
 #include "Engine/Direct3D.h"
 #include "Engine/Camera.h"
@@ -9,7 +10,6 @@
 #include "Engine/Rootjob.h"
 #include "Engine/Model.h"
 
-#include "DirectXCollision.h"
 #include "resource.h"
 #include "Stage.h"
 
@@ -178,6 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_MOUSEMOVE:
 		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));		//マウス座標セット
+		return 0;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

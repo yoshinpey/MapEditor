@@ -1,3 +1,5 @@
+#include <string>
+
 #include "Input.h"
 #include "Global.h"
 
@@ -18,7 +20,7 @@ namespace Input
 	LPDIRECTINPUTDEVICE8	pMouseDevice_;	//デバイスオブジェクト
 	DIMOUSESTATE mouseState_;				//マウスの状態
 	DIMOUSESTATE prevMouseState_;			//前フレームのマウスの状態
-	POINT mousePos_;							//マウスカーソルの位置
+	XMFLOAT3 mousePosition;		//マウスカーソルの位置
 
 	//コントローラー
 	const int MAX_PAD_NUM = 4;
@@ -160,15 +162,17 @@ namespace Input
 	//マウスカーソルの位置を取得
 	XMFLOAT3 GetMousePosition()
 	{
-		XMFLOAT3 result = XMFLOAT3((float)mousePos_.x, (float)mousePos_.y, 0);
-		return result;
+		return mousePosition;
 	}
 
 	//マウスカーソルの位置をセット
 	void SetMousePosition(int x, int y)
 	{
-		mousePos_.x = x;
-		mousePos_.y = y;
+		mousePosition.x = x;
+		mousePosition.y = y;
+		std::string resStr = std::to_string(x) + "," + std::to_string(y) + "\n";
+		OutputDebugString(resStr.c_str());
+
 	}
 
 

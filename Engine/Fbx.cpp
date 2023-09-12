@@ -3,7 +3,7 @@
 #include "Direct3D.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "DirectXCollision.h"
+#include <DirectXCollision.h>
 
 Fbx::Fbx()
 	:vertexCount_(0), polygonCount_(0), materialCount_(0),
@@ -312,7 +312,7 @@ void Fbx::RayCast(RayCastData* rayData)
 			XMVECTOR v1 = pVertices_[i1].position;
 			XMVECTOR v2 = pVertices_[i2].position;
 
-			// XMFLOAT4からXMVECTORへの変換
+			//値セット
 			XMVECTOR start = XMVectorSet(rayData->start.x, rayData->start.y, rayData->start.z, 0);
 			XMVECTOR dir = XMVectorSet(rayData->dir.x, rayData->dir.y, rayData->dir.z, 0);
 			dir = XMVector3Normalize(dir);
@@ -323,7 +323,6 @@ void Fbx::RayCast(RayCastData* rayData)
 			{
 				return;
 			}
-
 
 		}
 	}

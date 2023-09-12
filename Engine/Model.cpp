@@ -3,7 +3,7 @@
 
 namespace Model {
 
-	//モデルのポインタをぶち込んでおくベクタ
+	//モデルのポインタをいれておくベクタ
 	std::vector<ModelData*> modelList;
 }
 
@@ -14,7 +14,7 @@ int Model::Load(std::string fileName)
 	pData->filename_ = fileName;
 	pData->pfbx_ = nullptr;
 
-	//ファイルネームが同じだったら、読まん！
+	//ファイルネームが同じだったら読まない
 	for (auto& e : modelList)
 	{
 		if (e->filename_ == fileName) {
@@ -82,8 +82,10 @@ void Model::RayCast(int hModel_, RayCastData& rayData)
 	XMVECTOR vstart = XMLoadFloat4(&rayData.start);
 	vstart = XMVector3TransformCoord(vstart, wInv);
 	XMStoreFloat4(&rayData.start, vstart);
+
 	//始点から方向ベクトルを伸ばした先(通過点)
 	vpass = XMVector3TransformCoord(vpass, wInv);
+
 	//ベクトルにする
 	vpass = vpass - vstart;
 	XMStoreFloat4(&rayData.dir, vpass);
