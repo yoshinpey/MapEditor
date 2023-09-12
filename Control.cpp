@@ -23,7 +23,7 @@ void Control::Initialize()
 
 void Control::Update()
 {
-    if (Input::IsMouseButton(0))
+    if (Input::IsMouseButton(0)&& Input::IsKey(DIK_LALT))
     {
         // Mouse‚Å‘€ì
         UseMouse();
