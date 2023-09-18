@@ -93,24 +93,6 @@ void Control::Update()
     camTar.x += XMVectorGetX(vMoveForward);
     camTar.z += XMVectorGetZ(vMoveForward);
     Camera::SetTarget(camTar);
-
-    //レイキャスト
-    /*
-    Stage* pStage = (Stage*)FindObject("Stage");    //ステージオブジェクトを探す
-    int hGroundModel = pStage->GetModelHandle();    //モデル番号を取得
-
-    RayCastData data;
-    data.start = transform_.position_;   //レイの発射位置
-    data.dir = XMFLOAT3(0, -1, 0);       //レイの方向
-    Model::RayCast(hGroundModel, &data); //レイを発射
-    
-    //レイが当たったら
-    if (data.hit)
-    {
-        //その分位置を下げる
-        transform_.position_.y -= data.dist;
-    }
-    */
 }
 
 void Control::Draw()

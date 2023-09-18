@@ -17,25 +17,27 @@ namespace
     const int MODEL_NUM{ TYPEMAX };     //モデル数
 
     //限界値
-    const int SIZE_X{ 15 };
-    const int SIZE_Z{ 15 };
-    const int SIZE_Y{ 0 };
+    static const int SIZE_X{ 15 };
+    static const int SIZE_Z{ 15 };
+    static const int SIZE_Y{ 0 };
 }
 
 //ステージを管理するクラス
 class Stage : public GameObject
 {
-    int hModel_[TYPEMAX];      //モデル
+   
     //ひとマスの情報
-    struct
+    struct BoxInfo
     {
         BOX_TYPE type_;
         int height_;
-    }table_[SIZE_X][SIZE_Z];
+    };
 
-    
-    int mode_;      //0:上げる 1:下げる 2:種類を変える 
-    int select_;    //種類
+    int hModel_[TYPEMAX];               // モデル
+    BoxInfo table_[SIZE_X][SIZE_Z];     // ステージの情報
+
+    int mode_;                          // 0:上げる   1:下げる   2:種類変更 
+    int select_;                        // 種類
 
 public:
     //コンストラクタ
