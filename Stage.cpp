@@ -26,7 +26,7 @@ Stage::Stage(GameObject* parent)
     {
         for (int z = 0; z < SIZE_Z; z++)
         {
-            table_[x][z] = { DEFAULT, 1 };
+            SetBlockType(x,z, DEFAULT);
         }
     }
 }
@@ -61,7 +61,7 @@ void Stage::Initialize()
         for (int z = 0; z < SIZE_Z; z++) 
         {
             SetBlockType(x, z, DEFAULT);
-            SetBlockHeight(x, z, 1);
+            SetBlockHeight(x, z, SIZE_Y);
         }
     }
 
@@ -79,7 +79,7 @@ void Stage::Update()
     XMMATRIX vp =
     {
         w,  0,  0,  0,
-        0,  -w, 0,  0,
+        0,  -h, 0,  0,
         0,  0,  1,  0,
         w,  h,  0,  1
     };
@@ -128,7 +128,7 @@ void Stage::Update()
                 //ƒŒƒC‚ª“–‚½‚Á‚½‚çL‚Î‚·
                 if (data.hit)
                 {
-                    table_[x][y].height_++;
+                    table_[x][z].height_++;
                     break;
                 }
             }

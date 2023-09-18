@@ -19,12 +19,13 @@ namespace
     //限界値
     const int SIZE_X{ 15 };
     const int SIZE_Z{ 15 };
-    const int SIZE_Y{ 5 };
+    const int SIZE_Y{ 0 };
 }
 
 //ステージを管理するクラス
 class Stage : public GameObject
 {
+    int hModel_[TYPEMAX];      //モデル
     //ひとマスの情報
     struct
     {
@@ -32,7 +33,7 @@ class Stage : public GameObject
         int height_;
     }table_[SIZE_X][SIZE_Z];
 
-    int hModel_[TYPEMAX];      //モデル
+    
     int mode_;      //0:上げる 1:下げる 2:種類を変える 
     int select_;    //種類
 
@@ -56,7 +57,4 @@ public:
     void SetBlockHeight(int _x, int _z, int _height);
     //ダイアログ
     BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-
-    //レイキャスト
-    //int GetModelHandle() { return hModel_[_type]; }
 };
