@@ -16,8 +16,10 @@ Control::~Control()
 
 void Control::Initialize()
 {
+    XMFLOAT3 stageSize = XMFLOAT3(SIZE_X, SIZE_Y, SIZE_Z);
+
     ///////////////// カメラ焦点の初期位置をマップ中央に移動
-    XMFLOAT3 camTar = { 7.5f, 0.0f, 7.5f };
+    XMFLOAT3 camTar = { SIZE_X / 2.0f, SIZE_Y, SIZE_Z / 2.0f };
     transform_.position_ = camTar;
 }
 

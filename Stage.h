@@ -59,4 +59,10 @@ public:
     void SetBlockHeight(int _x, int _z, int _height);
     //ダイアログ
     BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+    // ステージサイズを取得する関数
+    XMFLOAT3 getSize() const
+    {
+        return XMFLOAT3(static_cast<float>(SIZE_X), static_cast<float>(SIZE_Y), static_cast<float>(SIZE_Z));
+    }
 };
