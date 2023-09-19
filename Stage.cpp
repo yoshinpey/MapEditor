@@ -37,45 +37,23 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-    //ファイルパス
-    std::string failBase = "Assets/";
-    std::string modelName[] =
-    {
-        "BoxDefault.fbx",
-        "BoxBrick.fbx",
-        "BoxGrass.fbx",
-        "BoxSand.fbx",
-        "BoxWater.fbx",
-    };
+    //テスト用の乱数初期化
+    srand((unsigned int)time(nullptr));
 
-    //モデルデータのロード
-    for (int i = 0; i <TYPEMAX; i++)
-    {
-        hModel_[i] = Model::Load(failBase + modelName[i]);
-        assert(hModel_[i] >= 0);
-    }
-
-    //モデル読み込み
-    for (int x = 0; x < SIZE_X; x++) 
-    {
-        for (int z = 0; z < SIZE_Z; z++) 
-        {
-            SetBlockType(x, z, DEFAULT);
-            SetBlockHeight(x, z, SIZE_Y);
-        }
-    }
+    //モデルの読み込み
+    LoadModels();
 
 }
 
 void Stage::Update()
 {
-    if (!Input::IsMouseButtonDown(0)) {
+    if (!Input::IsMouseButtonDown(0)) 
+    {
         return;
     }
     float w = (float)(Direct3D::scrWidth / 2.0f);
     float h = (float)(Direct3D::scrHeight / 2.0f);
-    //offsetx,y = 0;
-    //minZ=0,maxZ =1
+
     XMMATRIX vp =
     {
         w,  0,  0,  0,
@@ -106,7 +84,7 @@ void Stage::Update()
     //それにinvVP、InvProj、invViewをかける
     vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
 
-    int bufX = -1, bufZ;
+    int bufX = -1, bufZ = -1;
     float minDistance = 9999999;
 
     for (int x = 0; x < SIZE_X; x++)
@@ -128,7 +106,7 @@ void Stage::Update()
                 Model::SetTransform(hModel_[0], blockTrans);
                 Model::RayCast(hModel_[0],data);
 
-                //レイが当たったら伸ばす
+                //レイが当たったとき
                 if (data.hit)
                 {
                     //table_[x][z].height_++;
@@ -201,6 +179,36 @@ void Stage::SetBlockType(int _x, int _z, BOX_TYPE _type)
 void Stage::SetBlockHeight(int _x, int _z, int _height)
 {
     table_[_x][_z].height_ = _height;
+}
+
+void Stage::LoadModels()
+{
+    // ファイルパス
+    std::string failBase = "Assets/";
+    std::string modelName[] =
+    {
+        "BoxDefault.fbx",
+        "BoxBrick.fbx",
+        "BoxGrass.fbx",
+        "BoxSand.fbx",
+        "BoxWater.fbx",
+    };
+
+    // モデルデータのロード
+    for (int i = 0; i < TYPEMAX; i++)
+    {
+        hModel_[i] = Model::Load(failBase + modelName[i]);
+        assert(hModel_[i] >= 0);
+    }
+
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            SetBlockType(x, z, DEFAULT);
+            SetBlockHeight(x, z, SIZE_Y);
+        }
+    }
 }
 
 // ダイアログ
