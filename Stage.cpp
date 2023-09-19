@@ -106,6 +106,9 @@ void Stage::Update()
     //それにinvVP、InvProj、invViewをかける
     vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
 
+    int bufX = -1, bufZ;
+    float minDistance = 9999999;
+
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
@@ -128,11 +131,37 @@ void Stage::Update()
                 //レイが当たったら伸ばす
                 if (data.hit)
                 {
-                    table_[x][z].height_++;
-                    break;
+                    //table_[x][z].height_++;
+                    //break;
+
+                    if (minDistance > data.dist)
+                    {
+                        minDistance = data.dist;
+                        bufX = x;
+                        bufZ = z;
+                    }
                 }
             }
         }
+    }
+    if (bufX >= 0)
+    {
+        switch (mode_)
+        {
+        case 0:
+            table_[bufX][bufZ].height_++;
+            break;
+        case 1:
+            if (table_[bufX][bufZ].height_ > 0)
+            {
+                table_[bufX][bufZ].height_--;
+            }
+            break;
+        case 2:
+            table_[bufX][bufZ].type_ = static_cast<BOX_TYPE>(select_);
+            break;
+        }
+
     }
 }
 
@@ -174,45 +203,41 @@ void Stage::SetBlockHeight(int _x, int _z, int _height)
     table_[_x][_z].height_ = _height;
 }
 
-//ダイアログ
+// ダイアログ
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
     {
-        //初期化
     case WM_INITDIALOG:
-        //ラジオボタン初期化
         SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
-
-        //コンボボックス初期化
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, DEFAULT, (LPARAM)"デフォルト");
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, BRICK, (LPARAM)"レンガ");
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, GRASS, (LPARAM)"草原");
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, SAND, (LPARAM)"砂地");
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, WATER, (LPARAM)"水");
-        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_SETCURSEL, TYPEMAX, 0);
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, 0, (LPARAM)"レンガ");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, 0, (LPARAM)"草原");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, 0, (LPARAM)"砂地");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, 0, (LPARAM)"水");
+        SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_SETCURSEL, 0, 0);
         return TRUE;
 
-        //選択項目が変更された
-    case CBN_SELCHANGE:
-
-        int selectedIndex = SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_GETCURSEL, 0, 0);
-        if (selectedIndex != CB_ERR)
+    case WM_COMMAND:
+        switch (LOWORD(wp))
         {
-            //選択番号に合わせてブロックタイプを変更
-            BOX_TYPE selectedType = static_cast<BOX_TYPE>(selectedIndex);
+        case IDC_RADIO_UP:
+            mode_ = 0;
+            return TRUE;
 
-            //ブロックの位置情報
-            int x = 0;
-            int z = 0;
+        case IDC_RADIO_DOWN:
+            mode_ = 1;
+            return TRUE;
 
-            // ブロックタイプを変更
-            SetBlockType(x, z, selectedType);
+        case IDC_RADIO_CHANGE:
+            mode_ = 2;
+            return TRUE;
 
-            // ウィンドウを再描画して変更を反映
-            InvalidateRect(hDlg, nullptr, TRUE);
+        case IDC_COMBO:
+            select_ = (int)SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_GETCURSEL, 0, 0);
+            return TRUE;
         }
-        break;
+        return FALSE;
     }
     return FALSE;
 }
