@@ -42,12 +42,6 @@ class Stage : public GameObject
     // モデルデータの読み込み
     void LoadModels();
 
-    // ラジオボタンの操作
-    void HandleRadioButton(WPARAM wp);
-
-    // コンボボックスの操作
-    void HandleComboBox(WPARAM wp);
-
 public:
     //コンストラクタ
     Stage(GameObject* parent);
@@ -67,10 +61,10 @@ public:
     //開放
     void Release() override;
 
-    //配置するブロックの種類
+    //ブロックの種類を設定
     void SetBlockType(int _x, int _z, BOX_TYPE _type);
 
-    //配置するブロックの高さ
+    //ブロックの高さを設定
     void SetBlockHeight(int _x, int _z, int _height);
 
     //ダイアログ

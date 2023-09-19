@@ -140,18 +140,20 @@ void Control::UseMouse()
 
 void Control::UseKey()
 {
+    float rotateSpeed = 1.0f;
+
     // ƒJƒƒ‰‰ñ“]
     if (Input::IsKey(DIK_LEFT))
     {
-        transform_.rotate_.y -= 1.0f;
+        transform_.rotate_.y -= rotateSpeed;
     }
     if (Input::IsKey(DIK_RIGHT))
     {
-        transform_.rotate_.y += 1.0f;
+        transform_.rotate_.y += rotateSpeed;
     }
     if (Input::IsKey(DIK_UP))
     {
-        transform_.rotate_.x -= 1.0f;
+        transform_.rotate_.x -= rotateSpeed;
 
         // ‰º‰ñ“]‚ÌŠp“x§ŒÀ
         if (transform_.rotate_.x <= -30.0f)
@@ -161,7 +163,7 @@ void Control::UseKey()
     }
     if (Input::IsKey(DIK_DOWN))
     {
-        transform_.rotate_.x += 1.0f;
+        transform_.rotate_.x += rotateSpeed;
 
         // ã‰ñ“]‚ÌŠp“x§ŒÀ
         if (transform_.rotate_.x >= 50.0f)

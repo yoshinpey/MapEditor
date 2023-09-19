@@ -14,14 +14,14 @@
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage")
 {
-    //乱数初期化
+    // 乱数初期化
     srand((unsigned int)time(nullptr));
 
-    //モデル初期化
+    // モデル初期化
     for (int i = 0; i < MODEL_NUM; i++) 
         hModel_[i] = -1;
     
-    //構造体初期化
+    // 構造体初期化
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
@@ -37,20 +37,23 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-    //テスト用の乱数初期化
+    // テスト用の乱数初期化
     srand((unsigned int)time(nullptr));
 
-    //モデルの読み込み
+    // モデルの読み込み
     LoadModels();
 
 }
 
 void Stage::Update()
 {
+    //マウスボタン押してないときは早期リターンで計算しない
     if (!Input::IsMouseButtonDown(0)) 
     {
         return;
     }
+
+    // スクリーンサイズ
     float w = (float)(Direct3D::scrWidth / 2.0f);
     float h = (float)(Direct3D::scrHeight / 2.0f);
 
@@ -61,39 +64,46 @@ void Stage::Update()
         0,  0,  1,  0,
         w,  h,  0,  1
     };
-    //ビューポート
+
+    // ビューポート
     XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
 
-    //プロジェクション変換
+    // プロジェクション変換
     XMMATRIX InvProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
     
-    //ビュー変換
+    // ビュー変換
     XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
 
+    // マウス座標取得
     XMFLOAT3 mousePosFront = Input::GetMousePosition();
     mousePosFront.z = 0.0f;
     XMFLOAT3 mousePosBack = Input::GetMousePosition();
     mousePosBack.z = 1.0f;
 
-    //マウス位置前をベクトルに変換
+    // マウス位置前をベクトルに変換
     XMVECTOR vMousePosFront = XMLoadFloat3(&mousePosFront);
-    //それにinvVP、InvProj、invViewをかける
+
+    // マウス位置ベクトルにinvVP、InvProj、invViewをかける
     vMousePosFront = XMVector3TransformCoord(vMousePosFront, invVP * InvProj * invView);
-    //マウス後ろ位置をベクトルに変換
+
+    // マウス後ろ位置をベクトルに変換
     XMVECTOR vMousePosBack = XMLoadFloat3(&mousePosBack);
-    //それにinvVP、InvProj、invViewをかける
+
+    // マウス後ろベクトルにinvVP、InvProj、invViewをかける
     vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
 
+    // 
     int bufX = -1, bufZ = -1;
     float minDistance = 9999999;
 
+    // ステージサイズ
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
         {
             for (int y = 0; y < table_[x][z].height_+1; y++)
             {
-                //マウス位置前ベクトルからマウス後ろ位置ベクトルにレイを打つ
+                //マウス位置前ベクトルからマウス位置後ろベクトルにレイを打つ
                 RayCastData data{};
                 XMStoreFloat4(&data.start, vMousePosFront);
                 XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
@@ -109,9 +119,6 @@ void Stage::Update()
                 //レイが当たったとき
                 if (data.hit)
                 {
-                    //table_[x][z].height_++;
-                    //break;
-
                     if (minDistance > data.dist)
                     {
                         minDistance = data.dist;
@@ -124,6 +131,7 @@ void Stage::Update()
     }
     if (bufX >= 0)
     {
+        // 編集モード変更
         switch (mode_)
         {
         case 0:
@@ -201,6 +209,7 @@ void Stage::LoadModels()
         assert(hModel_[i] >= 0);
     }
 
+    // ブロックタイプ初期化
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
