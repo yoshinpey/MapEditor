@@ -20,7 +20,7 @@ namespace Input
 	LPDIRECTINPUTDEVICE8	pMouseDevice_;	//デバイスオブジェクト
 	DIMOUSESTATE mouseState_;				//マウスの状態
 	DIMOUSESTATE prevMouseState_;			//前フレームのマウスの状態
-	XMFLOAT3 mousePosition;		//マウスカーソルの位置
+	XMFLOAT3 mousePosition;					//マウスカーソルの位置
 
 	//コントローラー
 	const int MAX_PAD_NUM = 4;
@@ -170,6 +170,7 @@ namespace Input
 	{
 		mousePosition.x = x;
 		mousePosition.y = y;
+		//デバック用、マウス位置表示
 		std::string resStr = std::to_string(x) + "," + std::to_string(y) + "\n";
 		OutputDebugString(resStr.c_str());
 

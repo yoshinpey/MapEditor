@@ -179,6 +179,7 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
     {
+        //初期化
     case WM_INITDIALOG:
         //ラジオボタン初期化
         SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
@@ -191,6 +192,27 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_ADDSTRING, WATER, (LPARAM)"水");
         SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_SETCURSEL, TYPEMAX, 0);
         return TRUE;
+
+        //選択項目が変更された
+    case CBN_SELCHANGE:
+
+        int selectedIndex = SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_GETCURSEL, 0, 0);
+        if (selectedIndex != CB_ERR)
+        {
+            //選択番号に合わせてブロックタイプを変更
+            BOX_TYPE selectedType = static_cast<BOX_TYPE>(selectedIndex);
+
+            //ブロックの位置情報
+            int x = 0;
+            int z = 0;
+
+            // ブロックタイプを変更
+            SetBlockType(x, z, selectedType);
+
+            // ウィンドウを再描画して変更を反映
+            InvalidateRect(hDlg, nullptr, TRUE);
+        }
+        break;
     }
     return FALSE;
 }
