@@ -92,9 +92,11 @@ void Stage::Update()
     // マウス後ろベクトルにinvVP、InvProj、invViewをかける
     vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
 
-    // 
-    int bufX = -1, bufZ = -1;
-    float minDistance = 9999999;
+    // 判定後のXZ
+    int XX = -1, ZZ = -1;
+
+    // 適当な大きい値で初期化
+    float minDist = 9999999;
 
     // ステージサイズ
     for (int x = 0; x < SIZE_X; x++)
@@ -103,7 +105,7 @@ void Stage::Update()
         {
             for (int y = 0; y < table_[x][z].height_+1; y++)
             {
-                //マウス位置前ベクトルからマウス位置後ろベクトルにレイを打つ
+                // マウス位置前ベクトルからマウス位置後ろベクトルにレイを打つ
                 RayCastData data{};
                 XMStoreFloat4(&data.start, vMousePosFront);
                 XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
@@ -116,38 +118,40 @@ void Stage::Update()
                 Model::SetTransform(hModel_[0], blockTrans);
                 Model::RayCast(hModel_[0],data);
 
-                //レイが当たったとき
+                // レイが当たったとき
                 if (data.hit)
                 {
-                    if (minDistance > data.dist)
+                    // 初回ヒット
+                    if (minDist > data.dist)
                     {
-                        minDistance = data.dist;
-                        bufX = x;
-                        bufZ = z;
+                        minDist = data.dist;
+                        XX = x;
+                        ZZ = z;
                     }
                 }
             }
         }
     }
-    if (bufX >= 0)
+
+    // レイが当たった後
+    if (XX >= 0)
     {
         // 編集モード変更
         switch (mode_)
         {
         case 0:
-            table_[bufX][bufZ].height_++;
+            table_[XX][ZZ].height_++;
             break;
         case 1:
-            if (table_[bufX][bufZ].height_ > 0)
+            if (table_[XX][ZZ].height_ > 0)
             {
-                table_[bufX][bufZ].height_--;
+                table_[XX][ZZ].height_--;
             }
             break;
         case 2:
-            table_[bufX][bufZ].type_ = static_cast<BOX_TYPE>(select_);
+            table_[XX][ZZ].type_ = static_cast<BOX_TYPE>(select_);
             break;
         }
-
     }
 }
 
