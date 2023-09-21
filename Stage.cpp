@@ -47,11 +47,10 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-    //マウスボタン押してないときは早期リターンで計算しない
-    if (!Input::IsMouseButtonDown(0)) 
-    {
-        return;
-    }
+    // マウスボタン押してないときは早期リターンで計算しない
+    if (!Input::IsMouseButtonDown(0)) return;
+    // ALTを押しているときは計算しない
+    if (Input::IsKey(DIK_LALT)) return;
 
     // スクリーンサイズ
     float w = (float)(Direct3D::scrWidth / 2.0f);
@@ -295,15 +294,18 @@ void Stage::Save()
     HANDLE hFile;
     hFile = CreateFile
     (
-        fileName,   //ファイル名
-        GENERIC_WRITE,      //アクセスモード
-        0,
-        NULL,
-        CREATE_ALWAYS,      //作成方法
-        FILE_ATTRIBUTE_NORMAL,
-        NULL
+        fileName,                   //ファイル名
+        GENERIC_WRITE,              //アクセスモード
+        0,                          //共有（なし）
+        NULL,                       //セキュリティ属性（継承しない）
+        CREATE_ALWAYS,              //作成方法
+        FILE_ATTRIBUTE_NORMAL,      //属性とフラグ（設定なし）
+        NULL                        //拡張属性（なし）
     );
-
+    /*
+    書き込み：GENERIC_WRITE  
+    読み込み：GENERIC_READ
+    */
     std::string data = "";
 
     DWORD bytes = 0;

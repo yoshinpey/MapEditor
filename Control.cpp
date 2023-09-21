@@ -39,12 +39,12 @@ void Control::Update()
     // カメラ上昇
     if (Input::IsKey(DIK_SPACE))
     {
-        transform_.position_.y += 0.05f;
+        transform_.position_.y += 0.08f;
     }
     // カメラ下降
     if (Input::IsKey(DIK_LSHIFT))
     {
-        transform_.position_.y -= 0.05f;
+        transform_.position_.y -= 0.08f;
     }
 
     // 位置座標を移動ベクトルに変換

@@ -105,7 +105,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
 	//レンダリング結果を表示する範囲
-	D3D11_VIEWPORT vp;
+	D3D11_VIEWPORT vp{};
 	vp.Width = (float)winW;			//幅
 	vp.Height = (float)winH;		//高さ
 	vp.MinDepth = 0.0f;				//手前
@@ -114,7 +114,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	vp.TopLeftY = 0;				//上
 
 	//深度ステンシルビューの作成
-	D3D11_TEXTURE2D_DESC descDepth;
+	D3D11_TEXTURE2D_DESC descDepth{};
 	descDepth.Width = winW;
 	descDepth.Height = winH;
 	descDepth.MipLevels = 1;
