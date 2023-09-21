@@ -7,6 +7,7 @@
 
 Fbx::Fbx()
 	:vertexCount_(0), polygonCount_(0), materialCount_(0),
+	pVertices_(nullptr),ppIndex_(nullptr),
 	pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr),
 	pMaterialList_(nullptr)
 {

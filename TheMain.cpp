@@ -19,6 +19,8 @@
 
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";	//ウィンドウクラス名
+
+//ウィンドウサイズを自分で設定したいとき用
 const int WINDOW_WIDTH = 1200;				//ウィンドウの幅
 const int WINDOW_HEIGHT = 800;				//ウィンドウの高さ
 
@@ -40,15 +42,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
-	wc.cbSize = sizeof(WNDCLASSEX);             //この構造体のサイズ
-	wc.hInstance = hInstance;                   //インスタンスハンドル
-	wc.lpszClassName = WIN_CLASS_NAME;          //ウィンドウクラス名
-	wc.lpfnWndProc = WndProc;                   //ウィンドウプロシージャ
-	wc.style = CS_VREDRAW | CS_HREDRAW;         //スタイル（デフォルト）
-	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION); //アイコン
-	wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);   //小さいアイコン
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);   //マウスカーソル
-	wc.lpszMenuName = NULL;                     //メニュー（なし）
+	wc.cbSize = sizeof(WNDCLASSEX);					//この構造体のサイズ
+	wc.hInstance = hInstance;						//インスタンスハンドル
+	wc.lpszClassName = WIN_CLASS_NAME;				//ウィンドウクラス名
+	wc.lpfnWndProc = WndProc;						//ウィンドウプロシージャ
+	wc.style = CS_VREDRAW | CS_HREDRAW;				//スタイル（デフォルト）
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);		//アイコン
+	wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);		//小さいアイコン
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);		//マウスカーソル
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);	//メニュー
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);	//背景（灰色）
@@ -56,8 +58,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 
 
 	//ウィンドウサイズの計算
-	RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
+	//RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+	RECT winRect = { 0, 0, displayWidth, displayHeight };
+	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, TRUE);
 	int winW = winRect.right - winRect.left;     //ウィンドウ幅
 	int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -69,8 +72,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 		WS_OVERLAPPEDWINDOW,	//スタイル（普通のウィンドウ）
 		CW_USEDEFAULT,			//表示位置左（おまかせ）
 		CW_USEDEFAULT,			//表示位置上（おまかせ）
-		WINDOW_WIDTH,					//ウィンドウ幅
-		WINDOW_HEIGHT,					//ウィンドウ高さ
+		winW,					//ウィンドウ幅
+		winH,					//ウィンドウ高さ
 		NULL,					//親ウインドウ（なし）
 		NULL,					//メニュー（なし）
 		hInstance,				//インスタンス
@@ -171,14 +174,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	int a = 0;
 	switch (msg)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);		//プログラム終了
 		return 0;
+
 	case WM_MOUSEMOVE:
 		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));		//マウス座標セット
 		return 0;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case ID_MENU_NEW:
+			a++;
+			break;
+		case ID_MENU_OPEN:
+			a++;
+			break;
+		case ID_MENU_SAVE:
+			((Stage*)pRootjob->FindObject("Stage"))->Save();
+			return 0;
+		}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

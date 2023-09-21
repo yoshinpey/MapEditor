@@ -70,6 +70,9 @@ public:
     //ダイアログ
     BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
+    //セーブ機能
+    void Save();
+
     // ステージサイズを取得する関数
     XMFLOAT3 getSize() const
     {
