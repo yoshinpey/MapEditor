@@ -27,14 +27,14 @@ class Stage : public GameObject
 {
    
     //ひとマスの情報
-    struct BoxInfo
+    struct Block
     {
         BOX_TYPE type_;
         int height_;
     };
 
     int hModel_[TYPEMAX];               // モデル
-    BoxInfo table_[SIZE_X][SIZE_Z];     // ステージの情報
+    Block table_[SIZE_X][SIZE_Z];     // ステージの情報
 
     int mode_;                          // 0:上げる   1:下げる   2:種類変更 
     int select_;                        // 種類
@@ -72,6 +72,15 @@ public:
 
     //セーブ機能
     void Save();
+
+    //ロード機能
+    void Load();
+
+    //ファイルからの読み取り
+    bool ReadLineFromFile(HANDLE hFile, char* buffer, DWORD bufferSize);
+
+    //新規作成
+    void ResetStage();
 
     // ステージサイズを取得する関数
     XMFLOAT3 getSize() const

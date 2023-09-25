@@ -189,11 +189,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam))
 		{
 		case ID_MENU_NEW:
-			a++;
-			break;
+			((Stage*)pRootjob->FindObject("Stage"))->ResetStage();
+			return 0;
 		case ID_MENU_OPEN:
-			a++;
-			break;
+			((Stage*)pRootjob->FindObject("Stage"))->Load();
+			return 0;
 		case ID_MENU_SAVE:
 			((Stage*)pRootjob->FindObject("Stage"))->Save();
 			return 0;
@@ -205,9 +205,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			int result = MessageBox(hWnd, "アプリケーションを終了しますか？", "終了確認", MB_YESNO | MB_ICONQUESTION);
 			if (result == IDYES) PostQuitMessage(0);
 		}
-
-
-
+		return 0;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

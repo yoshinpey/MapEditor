@@ -22,13 +22,7 @@ Stage::Stage(GameObject* parent)
         hModel_[i] = -1;
     
     // 構造体初期化
-    for (int x = 0; x < SIZE_X; x++)
-    {
-        for (int z = 0; z < SIZE_Z; z++)
-        {
-            SetBlockType(x,z, DEFAULT);
-        }
-    }
+    ResetStage();
 }
 
 Stage::~Stage()
@@ -250,18 +244,18 @@ void Stage::Save()
     char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
     //「ファイルを保存」ダイアログの設定
-    OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
-    ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-    ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-    ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")    //ファイルの種類
-        TEXT("すべてのファイル(*.*)\0*.*\0\0");               //ファイルの種類
-    ofn.lpstrFile = fileName;               	      //ファイル名
-    ofn.nMaxFile = MAX_PATH;               	    //パスの最大文字数
-    ofn.Flags = OFN_OVERWRITEPROMPT;   		    //フラグ（同名ファイルが存在したら上書き確認）
-    ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
-
+    OPENFILENAME ofn;                         	    //名前をつけて保存ダイアログの設定用構造体
+    ZeroMemory(&ofn, sizeof(ofn));            	    //構造体初期化
+    ofn.lStructSize = sizeof(OPENFILENAME);   	    //構造体のサイズ
+    ofn.lpstrFilter =
+        TEXT("マップデータ(*.map)\0*.map\0")        //ファイルの種類
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");     //ファイルの種類
+    ofn.lpstrFile = fileName;               	    //ファイル名
+    ofn.nMaxFile = MAX_PATH;               	        //パスの最大文字数
+    ofn.Flags = OFN_OVERWRITEPROMPT;   		        //フラグ
+    ofn.lpstrDefExt = "map";                  	    //デフォルト拡張子
     /*
-    「フラグ」の部分は
+    <フラグ>
     上書き保存するか確認する：OFN_OVERWRITEPROMPT(保存の時はコレ)
     存在するファイルしか選べない：OFN_FILEMUSTEXIST(開く時はコレ)
     */
@@ -273,32 +267,181 @@ void Stage::Save()
     //キャンセルしたら中断
     if (selFile == FALSE) return;
 
-
+    ////ファイル作成､開く
     HANDLE hFile;
     hFile = CreateFile
     (
-        fileName,                   //ファイル名
-        GENERIC_WRITE,              //アクセスモード
-        0,                          //共有（なし）
-        NULL,                       //セキュリティ属性（継承しない）
-        CREATE_ALWAYS,              //作成方法
-        FILE_ATTRIBUTE_NORMAL,      //属性とフラグ（設定なし）
-        NULL                        //拡張属性（なし）
+        fileName,                   // ファイル名
+        GENERIC_WRITE,              // アクセスモード
+        0,                          // 共有（なし）
+        NULL,                       // セキュリティ属性（継承しない）
+        CREATE_ALWAYS,              // 作成方法
+        FILE_ATTRIBUTE_NORMAL,      // 属性とフラグ（設定なし）
+        NULL                        // 拡張属性（なし）
     );
     /*
-    書き込み：GENERIC_WRITE  
+    <アクセスモード>
+    書き込み：GENERIC_WRITE
     読み込み：GENERIC_READ
-    */
-    std::string data = "";
+    <作成方法>
+    新しくファイルを作る（同名のファイルがあると上書き）：CREATE_ALWAYS
+    ファイルを開く    （同名のファイルがなければエラー）：OPEN_EXISTING
 
-    DWORD bytes = 0;
+    ////データ書き込み
+    DWORD dwBytes = 0;      //書き込み位置
     WriteFile
     (
-        hFile,              //ファイルハンドル
-        "ABCDEF",          //保存したい文字列
-        12,                 //保存する文字数
-        &bytes,             //保存したサイズ
-        NULL
+        hFile,                      //ファイルハンドル
+        "data",                     //保存するデータ（文字列）
+        (DWORD)strlen("data"),      //書き込む文字数
+        &dwBytes,                   //書き込んだサイズを入れる変数
+        NULL                        //オーバーラップド構造体（今回は使わない）
     );
-    CloseHandle(hFile);
+    */
+
+    // ファイルにステージ情報を書き込む
+    if (hFile != INVALID_HANDLE_VALUE) 
+    {
+        for (int x = 0; x < SIZE_X; x++) 
+        {
+            for (int z = 0; z < SIZE_Z; z++) 
+            {
+                // ブロックの種類と高さをファイルに書き込む
+                char blockInfo[100];
+                _snprintf_s(blockInfo, sizeof(blockInfo), "%d %d %d %d\n", x, z, table_[x][z].type_, table_[x][z].height_);
+                DWORD bytesWritten;
+                WriteFile(hFile, blockInfo, strlen(blockInfo), &bytesWritten, NULL);
+            }
+        }
+        // 閉じる
+        CloseHandle(hFile);
+    }
+#if 0
+    ////データ読み込み
+    //ファイルのサイズを取得
+    DWORD fileSize = GetFileSize(hFile, NULL);
+
+    //ファイルのサイズ分メモリを確保
+    char* data;
+    data = new char[fileSize];
+
+    DWORD dwBytes = 0; //読み込み位置
+
+    ReadFile(
+        hFile,     //ファイルハンドル
+        data,      //データを入れる変数
+        fileSize,  //読み込むサイズ
+        &dwBytes,  //読み込んだサイズ
+        NULL);     //オーバーラップド構造体（今回は使わない）
+
+    //開放
+    delete data;
+#endif
+}
+
+void Stage::Load()
+{
+    char fileName[MAX_PATH] = "";  // ファイル名を入れる変数
+
+    // 「ファイルを開く」ダイアログの設定
+    OPENFILENAME ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.lpstrFilter =
+        TEXT("マップデータ(*.map)\0*.map\0")
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_FILEMUSTEXIST;   // 存在するファイルしか選べないフラグ
+    ofn.lpstrDefExt = "map";          // デフォルト拡張子
+
+    // 「ファイルを開く」ダイアログ
+    BOOL selFile;
+    selFile = GetOpenFileName(&ofn);
+
+    // キャンセルしたら中断
+    if (selFile == FALSE) return;
+
+    // ファイルを開く
+    HANDLE hFile;
+    hFile = CreateFile
+    (
+        fileName,               // ファイル名
+        GENERIC_READ,           // 読み込みアクセスモード
+        0,                      // 共有（なし）
+        NULL,                   // セキュリティ属性（継承しない）
+        OPEN_EXISTING,          // ファイルを開く方法
+        FILE_ATTRIBUTE_NORMAL,  // 属性とフラグ（設定なし）
+        NULL                    // 拡張属性（なし）
+    );
+
+    if (hFile != INVALID_HANDLE_VALUE)
+    {
+        // ファイルからステージ情報を読み込む
+        char buffer[100];
+        while (ReadLineFromFile(hFile, buffer, sizeof(buffer)))
+        {
+            int x, z, type, height;
+            if (sscanf_s(buffer, "%d %d %d %d", &x, &z, &type, &height) == 4)
+            {
+                // 読み込んだ情報をステージに設定
+                if (x >= 0 && x < SIZE_X && z >= 0 && z < SIZE_Z)
+                {
+                    table_[x][z].type_ = static_cast<BOX_TYPE>(type);
+                    table_[x][z].height_ = height;
+                }
+            }
+        }
+
+        // ファイルを閉じる
+        CloseHandle(hFile);
+    }
+}
+
+bool Stage::ReadLineFromFile(HANDLE hFile, char* buffer, DWORD bufferSize)
+{
+    if (hFile == INVALID_HANDLE_VALUE || buffer == nullptr || bufferSize == 0)
+    {
+        return false;
+    }
+
+    DWORD bytesRead = 0;
+    char ch = 0;
+    DWORD totalBytesRead = 0;
+
+    while (totalBytesRead < bufferSize - 1)
+    {
+        if (ReadFile(hFile, &ch, 1, &bytesRead, nullptr) && bytesRead == 1)
+        {
+            if (ch == '\n' || ch == '\r')
+            {
+                // 改行文字を読んだら終了
+                break;
+            }
+            buffer[totalBytesRead++] = ch;
+        }
+        else
+        {
+            // ファイルの終端に達した場合やエラーが発生した場合は終了
+            break;
+        }
+    }
+
+    // ヌル終端
+    buffer[totalBytesRead] = '\0';
+
+    return totalBytesRead > 0;
+}
+
+void Stage::ResetStage()
+{
+    // 構造体初期化
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            SetBlockType(x, z, DEFAULT);
+            SetBlockHeight(x, z, SIZE_Y);
+        }
+    }
 }
