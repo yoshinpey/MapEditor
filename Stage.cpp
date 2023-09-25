@@ -37,12 +37,8 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-    // テスト用の乱数初期化
-    srand((unsigned int)time(nullptr));
-
     // モデルの読み込み
     LoadModels();
-
 }
 
 void Stage::Update()
@@ -66,34 +62,27 @@ void Stage::Update()
 
     // ビューポート
     XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-
     // プロジェクション変換
-    XMMATRIX InvProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-    
+    XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
     // ビュー変換
     XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
 
     // マウス座標取得
     XMFLOAT3 mousePosFront = Input::GetMousePosition();
     mousePosFront.z = 0.0f;
+    // マウス位置をベクトルに変換
+    XMVECTOR vMousePosFront = XMLoadFloat3(&mousePosFront);
+    // マウス位置ベクトルにinvVP、InvProj、invViewをかける
+    vMousePosFront = XMVector3TransformCoord(vMousePosFront, invVP * invProj * invView);
+
+    // マウス後ろ座標取得
     XMFLOAT3 mousePosBack = Input::GetMousePosition();
     mousePosBack.z = 1.0f;
-
-    // マウス位置前をベクトルに変換
-    XMVECTOR vMousePosFront = XMLoadFloat3(&mousePosFront);
-
-    // マウス位置ベクトルにinvVP、InvProj、invViewをかける
-    vMousePosFront = XMVector3TransformCoord(vMousePosFront, invVP * InvProj * invView);
-
-    // マウス後ろ位置をベクトルに変換
     XMVECTOR vMousePosBack = XMLoadFloat3(&mousePosBack);
-
-    // マウス後ろベクトルにinvVP、InvProj、invViewをかける
-    vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * InvProj * invView);
+    vMousePosBack = XMVector3TransformCoord(vMousePosBack, invVP * invProj * invView);
 
     // 判定後のXZ
     int XX = -1, ZZ = -1;
-
     // 適当な大きい値で初期化
     float minDist = 9999999;
 
@@ -110,12 +99,10 @@ void Stage::Update()
                 XMStoreFloat4(&data.dir, vMousePosBack - vMousePosFront);
 
                 Transform blockTrans;
-                blockTrans.position_.x = x;
-                blockTrans.position_.y = y;
-                blockTrans.position_.z = z;
+                blockTrans.position_ = {(float)x,(float)y,(float)z};
 
-                Model::SetTransform(hModel_[0], blockTrans);
-                Model::RayCast(hModel_[0],data);
+                Model::SetTransform(hModel_[DEFAULT], blockTrans);
+                Model::RayCast(hModel_[DEFAULT],data);
 
                 // レイが当たったとき
                 if (data.hit)
@@ -143,9 +130,7 @@ void Stage::Update()
             break;
         case 1:
             if (table_[XX][ZZ].height_ > 0)
-            {
                 table_[XX][ZZ].height_--;
-            }
             break;
         case 2:
             table_[XX][ZZ].type_ = static_cast<BOX_TYPE>(select_);
@@ -163,9 +148,7 @@ void Stage::Draw()
             for (int y = 0; y < table_[x][z].height_ + 1; y++)
             {
                 Transform blockTrans;
-                blockTrans.position_.x = x;
-                blockTrans.position_.z = z;
-                blockTrans.position_.y = y;
+                blockTrans.position_ = { (float)x,(float)y,(float)z };
 
                 int type = table_[x][z].type_;
 
