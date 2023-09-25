@@ -104,6 +104,16 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	pBackBuffer->Release();
 
 	///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
+#if 0
+	// ウィンドウクライアント領域のサイズを取得
+	RECT clientRect;
+	GetClientRect(hWnd, &clientRect);
+
+	// 描画範囲を16:9のアスペクト比に合わせて設定
+	float aspectRatio = 16.0f / 9.0f;
+	float viewportWidth = static_cast<float>(clientRect.right - clientRect.left);
+	float viewportHeight = viewportWidth / aspectRatio; // アスペクト比を保持
+#endif
 	//レンダリング結果を表示する範囲
 	D3D11_VIEWPORT vp{};
 	vp.Width = (float)winW;			//幅
@@ -112,6 +122,16 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	vp.MaxDepth = 1.0f;				//奥
 	vp.TopLeftX = 0;				//左
 	vp.TopLeftY = 0;				//上
+#if 0
+	//レンダリング結果を表示する範囲
+	D3D11_VIEWPORT vp{};
+	vp.TopLeftX = 0;				//左
+	vp.TopLeftY = (clientRect.bottom - clientRect.top - viewportHeight) / 2.0f; // 上下に余白を設ける
+	vp.Width = viewportWidth;			//幅
+	vp.Height = viewportHeight;		//高さ
+	vp.MinDepth = 0.0f;				//手前
+	vp.MaxDepth = 1.0f;				//奥
+#endif
 
 	//深度ステンシルビューの作成
 	D3D11_TEXTURE2D_DESC descDepth{};

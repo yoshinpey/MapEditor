@@ -21,8 +21,8 @@
 const char* WIN_CLASS_NAME = "SampleGame";	//ウィンドウクラス名
 
 //ウィンドウサイズを自分で設定したいとき用
-const int WINDOW_WIDTH = 1200;				//ウィンドウの幅
-const int WINDOW_HEIGHT = 800;				//ウィンドウの高さ
+const int WINDOW_WIDTH = 1400;				//ウィンドウの幅
+const int WINDOW_HEIGHT = 1000;				//ウィンドウの高さ
 
 //グローバル変数
 RootJob* pRootjob = nullptr;
@@ -58,8 +58,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 
 
 	//ウィンドウサイズの計算
-	//RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-	RECT winRect = { 0, 0, displayWidth, displayHeight };
+	RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+	//RECT winRect = { 0, 0, displayWidth, displayHeight };
 	AdjustWindowRect(&winRect, WS_POPUP, TRUE);
 	int winW = winRect.right - winRect.left;     //ウィンドウ幅
 	int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
