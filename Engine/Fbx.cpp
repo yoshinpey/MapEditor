@@ -301,7 +301,7 @@ void Fbx::RayCast(RayCastData* rayData)
 	for (int material = 0; material < materialCount_; material++)
 	{
 		// 頂点数 / 3 はポリゴン数
-		for (int poly = 0; poly < polygonCount_/3; poly++)
+		for (int poly = 0; poly < polygonCount_; poly++)
 		{
 			//ppIndex_[material][poly * 3];// materialのpoly * 3番目のインデックス
 			int i0 = ppIndex_[material][poly * 3 + 0];

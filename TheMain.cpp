@@ -60,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	//ウィンドウサイズの計算
 	//RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
 	RECT winRect = { 0, 0, displayWidth, displayHeight };
-	AdjustWindowRect(&winRect, WS_POPUP, TRUE);	
+	AdjustWindowRect(&winRect, WS_POPUP, TRUE);
 	int winW = winRect.right - winRect.left;     //ウィンドウ幅
 	int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -69,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, in
 	HWND hWnd = CreateWindow(
 		WIN_CLASS_NAME,			//ウィンドウクラス名
 		"実行中",				//タイトルバーに表示する内容
-		WS_OVERLAPPEDWINDOW,	//スタイル（普通のウィンドウ WS_OVERLAPPEDWINDOW フルスク WS_POPUP）
+		WS_POPUP,				//スタイル（普通のウィンドウ WS_OVERLAPPEDWINDOW フルスク WS_POPUP）
 		CW_USEDEFAULT,			//表示位置左（おまかせ）
 		CW_USEDEFAULT,			//表示位置上（おまかせ）
 		winW,					//ウィンドウ幅
@@ -198,6 +198,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			((Stage*)pRootjob->FindObject("Stage"))->Save();
 			return 0;
 		}
+
+	case WM_KEYDOWN:
+		if (wParam == VK_ESCAPE) 
+		{
+			int result = MessageBox(hWnd, "アプリケーションを終了しますか？", "終了確認", MB_YESNO | MB_ICONQUESTION);
+			if (result == IDYES) PostQuitMessage(0);
+		}
+
+
+
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

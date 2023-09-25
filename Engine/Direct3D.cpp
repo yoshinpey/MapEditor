@@ -11,8 +11,8 @@ namespace Direct3D
 	ID3D11DeviceContext* pContext_ = nullptr;				//デバイスコンテキスト
 	IDXGISwapChain* pSwapChain_ = nullptr;					//スワップチェイン
 	ID3D11RenderTargetView* pRenderTargetView_ = nullptr;	//レンダーターゲットビュー
-	ID3D11Texture2D* pDepthStencil;							//深度ステンシル
-	ID3D11DepthStencilView* pDepthStencilView;				//深度ステンシルビュー
+	ID3D11Texture2D* pDepthStencil = nullptr;				//深度ステンシル
+	ID3D11DepthStencilView* pDepthStencilView = nullptr;	//深度ステンシルビュー
 
 	struct SHADER_BUNDLE
 	{
@@ -83,7 +83,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	///////////////////////////レンダーターゲットビュー作成///////////////////////////////
 	//スワップチェーンからバックバッファを取得（バックバッファ ＝ レンダーターゲット）
-	ID3D11Texture2D* pBackBuffer;
+	ID3D11Texture2D* pBackBuffer = nullptr;
 	hr = pSwapChain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 	if (FAILED(hr))
 	{
