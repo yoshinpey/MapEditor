@@ -9,8 +9,6 @@
 #include "resource.h"
 #include "Stage.h"
 
-
-
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage")
 {
@@ -445,3 +443,42 @@ void Stage::ResetStage()
         }
     }
 }
+
+//////////開発中//////////
+#if 0
+    // ステージのブロックを変更する
+void ChangeBlock(int x, int z, BOX_TYPE type, int height)
+{
+    // 変更前の状態を保存
+    StageChange previousState;
+    previousState.x = x;
+    previousState.z = z;
+    previousState.type = table_[x][z].type_;
+    previousState.height = table_[x][z].height_;
+
+    // 変更を適用
+    table_[x][z].type_ = type;
+    table_[x][z].height_ = height;
+
+    // 変更履歴に追加
+    changeHistory.push(previousState);
+}
+
+void Stage::Undo()
+{
+    if (!changeHistory.empty())
+    {
+        StageChange previousState = changeHistory.top();
+        changeHistory.pop();
+
+        // 変更を元に戻す
+        table_[previousState.x][previousState.z].type_ = previousState.type;
+        table_[previousState.x][previousState.z].height_ = previousState.height;
+    }
+}
+
+void Stage::Redo()
+{
+}
+
+#endif

@@ -2,6 +2,7 @@
 #include "Engine/GameObject.h"
 #include <time.h>
 #include <Windows.h>
+#include <stack>
 
 namespace 
 {
@@ -20,6 +21,15 @@ namespace
     static const int SIZE_X{ 15 };
     static const int SIZE_Z{ 15 };
     static const int SIZE_Y{ 0 };
+
+    // Undo用の変更履歴構造体
+    struct StageChange
+    {
+        int x;
+        int z;
+        BOX_TYPE type;
+        int height;
+    };
 }
 
 //ステージを管理するクラス
@@ -81,6 +91,15 @@ public:
 
     //新規作成
     void ResetStage();
+
+    // 変更履歴を管理するスタック
+    std::stack<StageChange> changeHistory;
+
+    // 一つ戻す操作
+    void Undo();
+
+    // 一つ進む操作
+    void Redo();
 
     // ステージサイズを取得する関数
     XMFLOAT3 getSize() const
