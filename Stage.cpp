@@ -1,4 +1,6 @@
 #include <string>
+#include <cstdio>
+#include <iostream>
 
 #include "Engine/Model.h"
 #include "Engine/Fbx.h"
@@ -237,6 +239,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
+////////テキストファイルでセーブロード
+#if 0
 void Stage::Save()
 {
     char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
@@ -252,6 +256,7 @@ void Stage::Save()
     ofn.nMaxFile = MAX_PATH;               	        //パスの最大文字数
     ofn.Flags = OFN_OVERWRITEPROMPT;   		        //フラグ
     ofn.lpstrDefExt = "map";                  	    //デフォルト拡張子
+
     /*
     <フラグ>
     上書き保存するか確認する：OFN_OVERWRITEPROMPT(保存の時はコレ)
@@ -277,25 +282,7 @@ void Stage::Save()
         FILE_ATTRIBUTE_NORMAL,      // 属性とフラグ（設定なし）
         NULL                        // 拡張属性（なし）
     );
-    /*
-    <アクセスモード>
-    書き込み：GENERIC_WRITE
-    読み込み：GENERIC_READ
-    <作成方法>
-    新しくファイルを作る（同名のファイルがあると上書き）：CREATE_ALWAYS
-    ファイルを開く    （同名のファイルがなければエラー）：OPEN_EXISTING
 
-    ////データ書き込み
-    DWORD dwBytes = 0;      //書き込み位置
-    WriteFile
-    (
-        hFile,                      //ファイルハンドル
-        "data",                     //保存するデータ（文字列）
-        (DWORD)strlen("data"),      //書き込む文字数
-        &dwBytes,                   //書き込んだサイズを入れる変数
-        NULL                        //オーバーラップド構造体（今回は使わない）
-    );
-    */
 
     // ファイルにステージ情報を書き込む
     if (hFile != INVALID_HANDLE_VALUE) 
@@ -315,7 +302,28 @@ void Stage::Save()
         CloseHandle(hFile);
     }
 #if 0
+    /*
+    * <アクセスモード>
+    書き込み：GENERIC_WRITE
+    読み込み：GENERIC_READ
+    <作成方法>
+    新しくファイルを作る（同名のファイルがあると上書き）：CREATE_ALWAYS
+    ファイルを開く    （同名のファイルがなければエラー）：OPEN_EXISTING
+    */
+
+    ////データ書き込み
+    DWORD dwBytes = 0;      //書き込み位置
+    WriteFile
+    (
+        hFile,                      //ファイルハンドル
+        "data",                     //保存するデータ（文字列）
+        (DWORD)strlen("data"),      //書き込む文字数
+        &dwBytes,                   //書き込んだサイズを入れる変数
+        NULL                        //オーバーラップド構造体（今回は使わない）
+    );
+
     ////データ読み込み
+
     //ファイルのサイズを取得
     DWORD fileSize = GetFileSize(hFile, NULL);
 
@@ -395,7 +403,94 @@ void Stage::Load()
         CloseHandle(hFile);
     }
 }
+#endif
 
+//////バイナリファイルでセーブロード
+#if 1
+void Stage::Save()
+{
+    char fileName[MAX_PATH] = "無題.map";  // ファイル名を格納する変数
+
+    FILE* file;
+    if (fopen_s(&file, fileName, "wb") != 0)
+    {
+        // ファイルを開けなかった場合のエラーハンドリングを行う
+        std::cerr << "ファイルを開けませんでした。" << std::endl;
+        return;
+    }
+
+    // ステージ情報をバイナリ形式でファイルに書き込む
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            int blockInfo[2] = { table_[x][z].type_, table_[x][z].height_ };
+            if (fwrite(blockInfo, sizeof(int), 2, file) != 2)
+            {
+                // データの書き込みに失敗した場合のエラーハンドリングを行う
+                std::cerr << "ファイルへの書き込みに失敗しました。" << std::endl;
+                fclose(file);
+                return;
+            }
+        }
+    }
+
+    // ファイルを閉じる
+    fclose(file);
+}
+
+void Stage::Load()
+{
+    char fileName[MAX_PATH] = "";  // ファイル名を格納する変数
+
+    // 「ファイルを開く」ダイアログの設定
+    OPENFILENAME ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_FILEMUSTEXIST;   // 存在するファイルしか選択できないフラグ
+    ofn.lpstrDefExt = "map";          // デフォルトの拡張子
+
+    // 「ファイルを開く」ダイアログを表示
+    BOOL selFile;
+    selFile = GetOpenFileName(&ofn);
+
+    // キャンセルした場合は中断
+    if (selFile == FALSE) return;
+
+    FILE* file;
+    if (fopen_s(&file, fileName, "rb") != 0)
+    {
+        // ファイルを開けなかった場合のエラーハンドリングを行う
+        std::cerr << "ファイルを開けませんでした。" << std::endl;
+        return;
+    }
+
+    // ステージ情報をバイナリ形式でファイルから読み込む
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            int blockInfo[2];
+            if (fread(blockInfo, sizeof(int), 2, file) != 2)
+            {
+                // データの読み込みに失敗した場合のエラーハンドリングを行う
+                std::cerr << "ファイルからの読み込みに失敗しました。" << std::endl;
+                fclose(file);
+                return;
+            }
+            table_[x][z].type_ = static_cast<BOX_TYPE>(blockInfo[0]);
+            table_[x][z].height_ = blockInfo[1];
+        }
+    }
+
+    // ファイルを閉じる
+    fclose(file);
+}
+#endif
 bool Stage::ReadLineFromFile(HANDLE hFile, char* buffer, DWORD bufferSize)
 {
     if (hFile == INVALID_HANDLE_VALUE || buffer == nullptr || bufferSize == 0)
