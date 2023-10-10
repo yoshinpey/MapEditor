@@ -491,6 +491,7 @@ void Stage::Load()
     fclose(file);
 }
 #endif
+
 bool Stage::ReadLineFromFile(HANDLE hFile, char* buffer, DWORD bufferSize)
 {
     if (hFile == INVALID_HANDLE_VALUE || buffer == nullptr || bufferSize == 0)
