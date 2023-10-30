@@ -161,6 +161,7 @@
     <ClCompile Include="Engine\Sprite.cpp" />
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="TheMain.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Engine\Sprite.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="TestScene.h" />

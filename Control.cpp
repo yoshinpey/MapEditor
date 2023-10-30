@@ -125,6 +125,10 @@ void Control::UseMouse()
     XMMATRIX mRotY = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
     XMMATRIX mView = mRotX * mRotY;
 
+    //拡大後の位置フォワードべくった作る
+    //トランスフォームノーマル
+    //ベクトルの方向に知つけ
+
     // カメラの位置と焦点を設定
     XMFLOAT3 camPosFloat3;
     XMFLOAT3 camTargetFloat3;

@@ -72,6 +72,7 @@
     <ClCompile Include="Engine\Debug.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="PerlinNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameObject.h">
@@ -127,6 +128,7 @@
     <ClInclude Include="resource.h">
       <Filter>リソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="PerlinNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl">

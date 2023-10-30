@@ -12,7 +12,7 @@
 #include "Stage.h"
 
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage")
+    :GameObject(parent, "Stage"), perlin(0)
 {
     // 乱数初期化
     srand((unsigned int)time(nullptr));
@@ -23,6 +23,9 @@ Stage::Stage(GameObject* parent)
     
     // 構造体初期化
     ResetStage();
+
+    // パーリンノイズ初期化(シード値も設定可能)
+    perlin = PerlinNoise();
 }
 
 Stage::~Stage()
@@ -33,6 +36,9 @@ void Stage::Initialize()
 {
     // モデルの読み込み
     LoadModels();
+
+    // ステージの高さマップをランダムに生成
+    GenerateRandomHeightMap();
 }
 
 void Stage::Update()
@@ -578,3 +584,25 @@ void Stage::Redo()
 }
 
 #endif
+
+
+// ステージの高さマップをPerlin Noiseを使用して生成
+void Stage::GenerateRandomHeightMap()
+{
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            // パーリンノイズから高さを生成
+            double xCoord = static_cast<double>(x) / SIZE_X;
+            double zCoord = static_cast<double>(z) / SIZE_Z;
+            double height = perlin.noise(xCoord, zCoord);
+
+            // スケーリングなどの調整
+            height = (height + 1.0) * 0.5; // 0から1の範囲にスケール
+
+            // 高さを設定
+            table_[x][z].height_ = static_cast<int>(height * SIZE_Y);
+        }
+    }
+}

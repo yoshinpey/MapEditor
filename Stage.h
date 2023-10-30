@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "PerlinNoise.h"
 #include <time.h>
 #include <Windows.h>
 #include <stack>
@@ -35,7 +36,9 @@ namespace
 //ステージを管理するクラス
 class Stage : public GameObject
 {
-   
+    // 自動生成用のインスタンス
+    PerlinNoise perlin;
+
     //ひとマスの情報
     struct Block
     {
@@ -100,6 +103,8 @@ public:
 
     // 一つ進む操作
     void Redo();
+
+    void GenerateRandomHeightMap();
 
     // ステージサイズを取得する関数
     XMFLOAT3 getSize() const
