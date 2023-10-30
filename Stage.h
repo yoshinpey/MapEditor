@@ -95,14 +95,6 @@ public:
     //新規作成
     void ResetStage();
 
-    // 変更履歴を管理するスタック
-    std::stack<StageChange> changeHistory;
-
-    // 一つ戻す操作
-    void Undo();
-
-    // 一つ進む操作
-    void Redo();
 
     void GenerateRandomHeightMap();
 
