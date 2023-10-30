@@ -35,7 +35,10 @@ namespace
 //ステージを管理するクラス
 class Stage : public GameObject
 {
-   
+    // 変更履歴を管理するスタック
+    std::stack<StageChange> changeHistory;
+    std::stack<StageChange> redoHistory;
+
     //ひとマスの情報
     struct Block
     {
@@ -92,8 +95,8 @@ public:
     //新規作成
     void ResetStage();
 
-    // 変更履歴を管理するスタック
-    std::stack<StageChange> changeHistory;
+    // ブロックを変更する
+    void ChangeBlock(int x, int z, BOX_TYPE type, int height);
 
     // 一つ戻す操作
     void Undo();

@@ -6,7 +6,7 @@
 #include "Stage.h"
 
 Control::Control(GameObject* parent)
-    :GameObject(parent, "Control")
+    :GameObject(parent, "Control"), stage_(nullptr)
 {
 }
 
@@ -95,6 +95,20 @@ void Control::Update()
     camTar.x += XMVectorGetX(vMoveForward);
     camTar.z += XMVectorGetZ(vMoveForward);
     Camera::SetTarget(camTar);
+
+
+    // キーボードで Control + Z が押されたときに Undo を呼び出す
+    if (Input::IsKeyDown(DIK_Z) && Input::IsKeyDown(DIK_LCONTROL))
+    {
+        stage_ = new Stage(this)->Undo();
+    }
+
+    // キーボードで Control + Y が押されたときに Redo を呼び出す
+    if (Input::IsKeyDown(DIK_Y) && Input::IsKeyDown(DIK_LCONTROL))
+    {
+        stage_ = new Stage(this)->Redo();
+    }
+    
 }
 
 void Control::Draw()

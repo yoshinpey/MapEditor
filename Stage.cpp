@@ -541,11 +541,10 @@ void Stage::ResetStage()
 }
 
 //////////開発中//////////
-#if 0
-    // ステージのブロックを変更する
-void ChangeBlock(int x, int z, BOX_TYPE type, int height)
-{
-    // 変更前の状態を保存
+#if 1
+// ChangeBlock関数
+void Stage::ChangeBlock(int x, int z, BOX_TYPE type, int height) {
+    // 前の状態を保存
     StageChange previousState;
     previousState.x = x;
     previousState.z = z;
@@ -558,23 +557,40 @@ void ChangeBlock(int x, int z, BOX_TYPE type, int height)
 
     // 変更履歴に追加
     changeHistory.push(previousState);
+
+    // Redo履歴をクリア
+    while (!redoHistory.empty()) {
+        redoHistory.pop();
+    }
 }
 
-void Stage::Undo()
-{
-    if (!changeHistory.empty())
-    {
+// Undo関数
+void Stage::Undo() {
+    if (!changeHistory.empty()) {
         StageChange previousState = changeHistory.top();
         changeHistory.pop();
 
         // 変更を元に戻す
         table_[previousState.x][previousState.z].type_ = previousState.type;
         table_[previousState.x][previousState.z].height_ = previousState.height;
+
+        // Redo履歴に追加
+        redoHistory.push(previousState);
     }
 }
 
-void Stage::Redo()
-{
-}
+// Redo関数
+void Stage::Redo() {
+    if (!redoHistory.empty()) {
+        StageChange nextState = redoHistory.top();
+        redoHistory.pop();
 
+        // 変更を再適用
+        table_[nextState.x][nextState.z].type_ = nextState.type;
+        table_[nextState.x][nextState.z].height_ = nextState.height;
+
+        // Undo履歴に戻す
+        changeHistory.push(nextState);
+    }
+}
 #endif

@@ -4,7 +4,7 @@
 // ステージを管理するクラス
 class Control : public GameObject
 {
-
+    Stage* stage_;
 public:
     // コンストラクタ
     Control(GameObject* parent);
