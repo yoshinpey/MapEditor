@@ -3,16 +3,17 @@
 #include <iostream>
 
 #include "Engine/Model.h"
-#include "Engine/Fbx.h"
-#include "Engine/Debug.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
+
+#include "Engine/Fbx.h"
+#include "Engine/Debug.h"
 
 #include "resource.h"
 #include "Stage.h"
 
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), perlin(0)
+    :GameObject(parent, "Stage")
 {
     // 乱数初期化
     srand((unsigned int)time(nullptr));
@@ -24,8 +25,9 @@ Stage::Stage(GameObject* parent)
     // 構造体初期化
     ResetStage();
 
-    // パーリンノイズ初期化(シード値も設定可能)
-    perlin = PerlinNoise();
+    unsigned int seed = 123; // シード値
+    // パーリンノイズ初期化
+    perlin[10] = PerlinNoise();
 }
 
 Stage::~Stage()
