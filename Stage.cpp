@@ -305,48 +305,6 @@ void Stage::Save()
         // 閉じる
         CloseHandle(hFile);
     }
-#if 0
-    /*
-    * <アクセスモード>
-    書き込み：GENERIC_WRITE
-    読み込み：GENERIC_READ
-    <作成方法>
-    新しくファイルを作る（同名のファイルがあると上書き）：CREATE_ALWAYS
-    ファイルを開く    （同名のファイルがなければエラー）：OPEN_EXISTING
-    */
-
-    ////データ書き込み
-    DWORD dwBytes = 0;      //書き込み位置
-    WriteFile
-    (
-        hFile,                      //ファイルハンドル
-        "data",                     //保存するデータ（文字列）
-        (DWORD)strlen("data"),      //書き込む文字数
-        &dwBytes,                   //書き込んだサイズを入れる変数
-        NULL                        //オーバーラップド構造体（今回は使わない）
-    );
-
-    ////データ読み込み
-
-    //ファイルのサイズを取得
-    DWORD fileSize = GetFileSize(hFile, NULL);
-
-    //ファイルのサイズ分メモリを確保
-    char* data;
-    data = new char[fileSize];
-
-    DWORD dwBytes = 0; //読み込み位置
-
-    ReadFile(
-        hFile,     //ファイルハンドル
-        data,      //データを入れる変数
-        fileSize,  //読み込むサイズ
-        &dwBytes,  //読み込んだサイズ
-        NULL);     //オーバーラップド構造体（今回は使わない）
-
-    //開放
-    delete data;
-#endif
 }
 
 void Stage::Load()
@@ -415,6 +373,24 @@ void Stage::Save()
 {
     char fileName[MAX_PATH] = "無題.map";  // ファイル名を格納する変数
 
+    // 上書き保存ダイアログの設定
+    OPENFILENAME ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_OVERWRITEPROMPT;   // 上書き保存の確認ダイアログを表示
+    ofn.lpstrDefExt = "map";          // デフォルト拡張子
+
+    // 上書き保存ダイアログを表示
+    BOOL selFile;
+    selFile = GetSaveFileName(&ofn);
+
+    // キャンセルした場合は中断
+    if (selFile == FALSE) return;
+
     FILE* file;
     if (fopen_s(&file, fileName, "wb") != 0)
     {
@@ -455,8 +431,8 @@ void Stage::Load()
         TEXT("すべてのファイル(*.*)\0*.*\0\0");
     ofn.lpstrFile = fileName;
     ofn.nMaxFile = MAX_PATH;
-    ofn.Flags = OFN_FILEMUSTEXIST;   // 存在するファイルしか選択できないフラグ
-    ofn.lpstrDefExt = "map";          // デフォルトの拡張子
+    ofn.Flags = OFN_FILEMUSTEXIST;   // 存在するファイルしか選べないフラグ
+    ofn.lpstrDefExt = "map";          // デフォルト拡張子
 
     // 「ファイルを開く」ダイアログを表示
     BOOL selFile;
