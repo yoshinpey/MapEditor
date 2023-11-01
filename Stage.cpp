@@ -43,6 +43,7 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+
     // ステージの高さマップをランダムに生成
     if (Input::IsKeyDown(DIK_P))
     {
@@ -58,32 +59,13 @@ void Stage::Update()
             }
         }
     }
+    // 全体の上げ下げ
+    // 
+    // ダイアログ追加した
+    // 処理を関数にした
+    // ダイアログプロシージャ追加中
+    //////////////////////////////////
 
-    //地形の上げ下げ
-    if (Input::IsKeyDown(DIK_O))
-    {
-        for (int x = 0; x < SIZE_X; x++)
-        {
-            for (int z = 0; z < SIZE_Z; z++)
-            {
-                table_[x][z].height_++;
-            }
-        }
-    }
-
-    if (Input::IsKeyDown(DIK_L))
-    {
-        for (int x = 0; x < SIZE_X; x++)
-        {
-            for (int z = 0; z < SIZE_Z; z++)
-            {
-                if (table_[x][z].height_ > 0)
-                {
-                    table_[x][z].height_--;
-                }
-            }
-        }
-    }
 
     // マウスボタン押してないときは早期リターンで計算しない
     if (!Input::IsMouseButtonDown(0)) return;
@@ -283,6 +265,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         }
         return FALSE;
+    case IDC_ALL_UP:
+            AllUp();
     }
     return FALSE;
 }
@@ -598,3 +582,30 @@ void Stage::GenerateRandomHeightMap()
         }
     }
 }*/
+
+void Stage::AllUp()
+{
+    // 地形全体の上げる
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            table_[x][z].height_++;
+        }
+    }
+}
+
+void Stage::AllDown()
+{
+    // 地形全体下げる
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            if (table_[x][z].height_ > 0)
+            {
+                table_[x][z].height_--;
+            }
+        }
+    }
+}

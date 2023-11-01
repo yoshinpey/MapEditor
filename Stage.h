@@ -96,10 +96,11 @@ public:
     //新規作成
     void ResetStage();
 
-
-    void GenerateRandomHeightMap();
-
     void GenerateRandomHeightMap(unsigned int seed);
+
+    void AllDown();
+
+    void AllUp();
 
 
     // ステージサイズを取得する関数
