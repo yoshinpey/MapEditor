@@ -21,7 +21,7 @@ namespace
     //限界値
     static const int SIZE_X{ 15 };
     static const int SIZE_Z{ 15 };
-    static const int SIZE_Y{ 0 };
+    static const int SIZE_Y{ 10 };
 
     // Undo用の変更履歴構造体
     struct StageChange
@@ -38,6 +38,7 @@ class Stage : public GameObject
 {
     // 自動生成用のインスタンス
     PerlinNoise perlin;
+    unsigned int seed;
 
     //ひとマスの情報
     struct Block
@@ -97,6 +98,9 @@ public:
 
 
     void GenerateRandomHeightMap();
+
+    void GenerateRandomHeightMap(unsigned int seed);
+
 
     // ステージサイズを取得する関数
     XMFLOAT3 getSize() const

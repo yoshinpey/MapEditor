@@ -11,6 +11,7 @@
 
 #include "resource.h"
 #include "Stage.h"
+#include "PerlinNoise.h"
 
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage")
@@ -24,6 +25,10 @@ Stage::Stage(GameObject* parent)
     
     // 構造体初期化
     ResetStage();
+
+    // パーリンノイズの初期化
+    perlin.initializePermutationTable(); 
+
 }
 
 Stage::~Stage()
@@ -34,13 +39,52 @@ void Stage::Initialize()
 {
     // モデルの読み込み
     LoadModels();
-
-    // ステージの高さマップをランダムに生成
-    GenerateRandomHeightMap();
 }
 
 void Stage::Update()
 {
+    // ステージの高さマップをランダムに生成
+    if (Input::IsKeyDown(DIK_P))
+    {
+        unsigned int seed = 12345;
+        GenerateRandomHeightMap(seed);
+        //GenerateRandomHeightMap();
+        for (int x = 0; x < SIZE_X; x++)
+        {
+            for (int z = 0; z < SIZE_Z; z++)
+            {
+                if (table_[x][z].height_ < 0)
+                    table_[x][z].height_ = 1;
+            }
+        }
+    }
+
+    //地形の上げ下げ
+    if (Input::IsKeyDown(DIK_O))
+    {
+        for (int x = 0; x < SIZE_X; x++)
+        {
+            for (int z = 0; z < SIZE_Z; z++)
+            {
+                table_[x][z].height_++;
+            }
+        }
+    }
+
+    if (Input::IsKeyDown(DIK_L))
+    {
+        for (int x = 0; x < SIZE_X; x++)
+        {
+            for (int z = 0; z < SIZE_Z; z++)
+            {
+                if (table_[x][z].height_ > 0)
+                {
+                    table_[x][z].height_--;
+                }
+            }
+        }
+    }
+
     // マウスボタン押してないときは早期リターンで計算しない
     if (!Input::IsMouseButtonDown(0)) return;
     // ALTを押しているときは計算しない
@@ -521,22 +565,36 @@ void Stage::ResetStage()
 }
 
 // ステージの高さマップをPerlin Noiseを使用して生成
+void Stage::GenerateRandomHeightMap(unsigned int seed)
+{
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            // Perlin Noiseを使って高さを計算
+            double xCoord = static_cast<double>(x) / static_cast<double>(SIZE_X) * 3.0;
+            double zCoord = static_cast<double>(z) / static_cast<double>(SIZE_Z) * 3.0;
+
+            double height = perlin.noise(xCoord, zCoord, 0.0) * SIZE_Y;
+
+            // 高さを設定
+            table_[x][z].height_ = static_cast<int>(height);
+        }
+    }
+}
+/*
+ただの乱数バージョン
 void Stage::GenerateRandomHeightMap()
 {
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
         {
-            // パーリンノイズから高さを生成
-            double xCoord = static_cast<double>(x) / SIZE_X;
-            double zCoord = static_cast<double>(z) / SIZE_Z;
-            double height = perlin.noise(xCoord, zCoord);
-
-            // スケーリングなどの調整
-            height = (height + 1.0) * 0.5; // 0から1の範囲にスケール
+            // ランダムな高さを生成 (0 から SIZE_Y までの範囲)
+            int randomHeight = rand() % (SIZE_Y + 1);
 
             // 高さを設定
-            table_[x][z].height_ = static_cast<int>(height * SIZE_Y);
+            table_[x][z].height_ = randomHeight;
         }
     }
-}
+}*/
