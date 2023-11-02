@@ -455,7 +455,7 @@ void Stage::AllDown()
 // パーリンノイズ実行用
 void Stage::PerlinEXE()
 {
-    unsigned int seed = 12345;
+    seed = rand() % 100000;
     GenerateRandomHeightMap(seed);
     for (int x = 0; x < SIZE_X; x++)
     {
