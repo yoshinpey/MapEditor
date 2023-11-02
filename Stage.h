@@ -42,6 +42,7 @@ class Stage : public GameObject
     bool allUpFlag_;
     bool allDownFlag_;
     bool perlinFlag_;
+    bool collarFlag_;
 
     //‚Ğ‚Æƒ}ƒX‚Ìî•ñ
     struct Block

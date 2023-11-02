@@ -13,7 +13,9 @@
 #include "Stage.h"
 
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), seed(0), allUpFlag_(false), allDownFlag_(false), perlinFlag_(false), mode_(0), select_(0)
+    :GameObject(parent, "Stage"), 
+    seed(0), allUpFlag_(false), allDownFlag_(false), perlinFlag_(false), collarFlag_(false),
+    mode_(0), select_(0)
 {
     // 乱数初期化
     srand((unsigned int)time(nullptr));
@@ -54,20 +56,21 @@ void Stage::Update()
     if (allUpFlag_)
     {
         AllUp();
-        allUpFlag_ = false; // フラグをクリア
+        allUpFlag_ = false;
     }
 
     // 全体を下げる処理
     if (allDownFlag_)
     {
         AllDown();
-        allDownFlag_ = false; // フラグをクリア
+        allDownFlag_ = false;
     }
 
-    // ブロックタイプを高さに応じて変更（Iキー入力でトリガー）
-    if (Input::IsKey(DIK_I))
+    // ブロックタイプを高さに応じて変更
+    if (collarFlag_)
     {
         ChangeBlockTypeByHeight();
+        collarFlag_ = false;
     }
 
     // ----------------以下、レイの判定--------------------
@@ -277,6 +280,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_PERLIN:
             perlinFlag_ = true;
             return TRUE;
+        case IDC_COLLAR:
+            collarFlag_ = true;
         }
         return FALSE;
 
