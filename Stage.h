@@ -108,6 +108,8 @@ public:
     // Perlin Noiseの生成を実行
     void PerlinEXE();
 
+    void ChangeBlockTypeByHeight();
+
     // 全てのブロックの高さを一つ下げる
     void AllDown();
 

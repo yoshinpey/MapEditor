@@ -64,6 +64,12 @@ void Stage::Update()
         allDownFlag_ = false; // フラグをクリア
     }
 
+    // ブロックタイプを高さに応じて変更（Iキー入力でトリガー）
+    if (Input::IsKey(DIK_I))
+    {
+        ChangeBlockTypeByHeight();
+    }
+
     // ----------------以下、レイの判定--------------------
     if (!Input::IsMouseButtonDown(0)) return;  // マウスボタンが押されていない場合は処理しない
     if (Input::IsKey(DIK_LALT)) return;  // ALTキーが押されている場合は処理しない
@@ -380,7 +386,7 @@ void Stage::Load()
     fclose(file);
 }
 
-
+// 平面に戻す
 void Stage::ResetStage()
 {
     // 構造体初期化
@@ -452,6 +458,30 @@ void Stage::PerlinEXE()
         {
             if (table_[x][z].height_ < 0)
                 table_[x][z].height_ = 1;
+        }
+    }
+}
+
+// 高さに応じてブロックタイプを変更
+void Stage::ChangeBlockTypeByHeight()
+{
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            int height = table_[x][z].height_;
+            BOX_TYPE newBlockType;
+
+            if (height <= 0)
+                newBlockType = WATER;
+            else if (height <= 2)
+                newBlockType = SAND;
+            else if (height <= 5)
+                newBlockType = BRICK;
+            else
+                newBlockType = GRASS;
+
+            SetBlockType(x, z, newBlockType);
         }
     }
 }
