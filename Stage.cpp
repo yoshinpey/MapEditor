@@ -17,19 +17,12 @@ Stage::Stage(GameObject* parent)
     seed(0), allUpFlag_(false), allDownFlag_(false), perlinFlag_(false), collarFlag_(false),
     mode_(0), select_(0)
 {
-    // 乱数初期化
-    srand((unsigned int)time(nullptr));
-
     // モデル初期化
     for (int i = 0; i < MODEL_NUM; i++) 
         hModel_[i] = -1;
     
     // 構造体初期化
     ResetStage();
-
-    // パーリンノイズの初期化
-    perlin.initializePermutationTable(); 
-
 }
 
 Stage::~Stage()
