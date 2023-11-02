@@ -59,15 +59,21 @@ void Stage::Update()
             }
         }
     }
-    // 全体の上げ下げ
-    // 
-    // ダイアログ追加した
-    // 処理を関数にした
-    // ダイアログプロシージャ追加中
-    //////////////////////////////////
+
+    // 全体の上げ下げ処理
+    if (allUpFlag_)
+    {
+        AllUp();
+        allUpFlag_ = false; // フラグをクリア
+    }
+    if (allDownFlag_)
+    {
+        AllDown();
+        allDownFlag_ = false; // フラグをクリア
+    }
 
 
-    // マウスボタン押してないときは早期リターンで計算しない
+    // 以下、レイの判定。マウスボタン押してないときは早期リターンで計算しない
     if (!Input::IsMouseButtonDown(0)) return;
     // ALTを押しているときは計算しない
     if (Input::IsKey(DIK_LALT)) return;
@@ -263,10 +269,17 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_COMBO:
             select_ = (int)SendMessage(GetDlgItem(hDlg, IDC_COMBO), CB_GETCURSEL, 0, 0);
             return TRUE;
+
+        case IDC_ALL_UP:
+            allUpFlag_ = true;
+            return TRUE;
+
+        case IDC_ALL_DOWN:
+            allDownFlag_ = true;
+            return TRUE;
         }
         return FALSE;
-    case IDC_ALL_UP:
-            AllUp();
+
     }
     return FALSE;
 }

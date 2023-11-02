@@ -39,7 +39,8 @@ class Stage : public GameObject
     // 自動生成用のインスタンス
     PerlinNoise perlin;
     unsigned int seed;
-
+    bool allUpFlag_;
+    bool allDownFlag_;
     //ひとマスの情報
     struct Block
     {
