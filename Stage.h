@@ -21,7 +21,7 @@ namespace
     //限界値
     static const int SIZE_X{ 15 };
     static const int SIZE_Z{ 15 };
-    static const int SIZE_Y{ 10 };
+    static const int SIZE_Y{ 0 };
 
     // Undo用の変更履歴構造体
     struct StageChange
@@ -41,6 +41,8 @@ class Stage : public GameObject
     unsigned int seed;
     bool allUpFlag_;
     bool allDownFlag_;
+    bool perlinFlag_;
+
     //ひとマスの情報
     struct Block
     {
@@ -97,11 +99,17 @@ public:
     //新規作成
     void ResetStage();
 
+    // Perlin Noiseを使って高さマップを生成
     void GenerateRandomHeightMap(unsigned int seed);
 
-    void AllDown();
-
+    // 全てのブロックの高さを一つ上げる
     void AllUp();
+
+    // Perlin Noiseの生成を実行
+    void PerlinEXE();
+
+    // 全てのブロックの高さを一つ下げる
+    void AllDown();
 
 
     // ステージサイズを取得する関数

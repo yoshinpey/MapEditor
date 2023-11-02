@@ -11,10 +11,9 @@
 
 #include "resource.h"
 #include "Stage.h"
-#include "PerlinNoise.h"
 
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage")
+    :GameObject(parent, "Stage"), seed(0), allUpFlag_(false), allDownFlag_(false), perlinFlag_(false), mode_(0), select_(0)
 {
     // 乱数初期化
     srand((unsigned int)time(nullptr));
@@ -45,38 +44,29 @@ void Stage::Update()
 {
 
     // ステージの高さマップをランダムに生成
-    if (Input::IsKeyDown(DIK_P))
+    if (perlinFlag_)
     {
-        unsigned int seed = 12345;
-        GenerateRandomHeightMap(seed);
-        //GenerateRandomHeightMap();
-        for (int x = 0; x < SIZE_X; x++)
-        {
-            for (int z = 0; z < SIZE_Z; z++)
-            {
-                if (table_[x][z].height_ < 0)
-                    table_[x][z].height_ = 1;
-            }
-        }
+        PerlinEXE();
+        perlinFlag_ = false;
     }
 
-    // 全体の上げ下げ処理
+    // 全体を上げる処理
     if (allUpFlag_)
     {
         AllUp();
         allUpFlag_ = false; // フラグをクリア
     }
+
+    // 全体を下げる処理
     if (allDownFlag_)
     {
         AllDown();
         allDownFlag_ = false; // フラグをクリア
     }
 
-
-    // 以下、レイの判定。マウスボタン押してないときは早期リターンで計算しない
-    if (!Input::IsMouseButtonDown(0)) return;
-    // ALTを押しているときは計算しない
-    if (Input::IsKey(DIK_LALT)) return;
+    // ----------------以下、レイの判定--------------------
+    if (!Input::IsMouseButtonDown(0)) return;  // マウスボタンが押されていない場合は処理しない
+    if (Input::IsKey(DIK_LALT)) return;  // ALTキーが押されている場合は処理しない
 
     // スクリーンサイズ
     float w = (float)(Direct3D::scrWidth / 2.0f);
@@ -277,6 +267,10 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_ALL_DOWN:
             allDownFlag_ = true;
             return TRUE;
+
+        case IDC_PERLIN:
+            perlinFlag_ = true;
+            return TRUE;
         }
         return FALSE;
 
@@ -284,132 +278,7 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-////////テキストファイルでセーブロード
-#if 0
-void Stage::Save()
-{
-    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
-
-    //「ファイルを保存」ダイアログの設定
-    OPENFILENAME ofn;                         	    //名前をつけて保存ダイアログの設定用構造体
-    ZeroMemory(&ofn, sizeof(ofn));            	    //構造体初期化
-    ofn.lStructSize = sizeof(OPENFILENAME);   	    //構造体のサイズ
-    ofn.lpstrFilter =
-        TEXT("マップデータ(*.map)\0*.map\0")        //ファイルの種類
-        TEXT("すべてのファイル(*.*)\0*.*\0\0");     //ファイルの種類
-    ofn.lpstrFile = fileName;               	    //ファイル名
-    ofn.nMaxFile = MAX_PATH;               	        //パスの最大文字数
-    ofn.Flags = OFN_OVERWRITEPROMPT;   		        //フラグ
-    ofn.lpstrDefExt = "map";                  	    //デフォルト拡張子
-
-    /*
-    <フラグ>
-    上書き保存するか確認する：OFN_OVERWRITEPROMPT(保存の時はコレ)
-    存在するファイルしか選べない：OFN_FILEMUSTEXIST(開く時はコレ)
-    */
-
-    //「ファイルを保存」ダイアログ
-    BOOL selFile;
-    selFile = GetSaveFileName(&ofn);
-
-    //キャンセルしたら中断
-    if (selFile == FALSE) return;
-
-    ////ファイル作成､開く
-    HANDLE hFile;
-    hFile = CreateFile
-    (
-        fileName,                   // ファイル名
-        GENERIC_WRITE,              // アクセスモード
-        0,                          // 共有（なし）
-        NULL,                       // セキュリティ属性（継承しない）
-        CREATE_ALWAYS,              // 作成方法
-        FILE_ATTRIBUTE_NORMAL,      // 属性とフラグ（設定なし）
-        NULL                        // 拡張属性（なし）
-    );
-
-
-    // ファイルにステージ情報を書き込む
-    if (hFile != INVALID_HANDLE_VALUE) 
-    {
-        for (int x = 0; x < SIZE_X; x++) 
-        {
-            for (int z = 0; z < SIZE_Z; z++) 
-            {
-                // ブロックの種類と高さをファイルに書き込む
-                char blockInfo[100];
-                _snprintf_s(blockInfo, sizeof(blockInfo), "%d %d %d %d\n", x, z, table_[x][z].type_, table_[x][z].height_);
-                DWORD bytesWritten;
-                WriteFile(hFile, blockInfo, strlen(blockInfo), &bytesWritten, NULL);
-            }
-        }
-        // 閉じる
-        CloseHandle(hFile);
-    }
-}
-
-void Stage::Load()
-{
-    char fileName[MAX_PATH] = "";  // ファイル名を入れる変数
-
-    // 「ファイルを開く」ダイアログの設定
-    OPENFILENAME ofn;
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    ofn.lpstrFilter =
-        TEXT("マップデータ(*.map)\0*.map\0")
-        TEXT("すべてのファイル(*.*)\0*.*\0\0");
-    ofn.lpstrFile = fileName;
-    ofn.nMaxFile = MAX_PATH;
-    ofn.Flags = OFN_FILEMUSTEXIST;   // 存在するファイルしか選べないフラグ
-    ofn.lpstrDefExt = "map";          // デフォルト拡張子
-
-    // 「ファイルを開く」ダイアログ
-    BOOL selFile;
-    selFile = GetOpenFileName(&ofn);
-
-    // キャンセルしたら中断
-    if (selFile == FALSE) return;
-
-    // ファイルを開く
-    HANDLE hFile;
-    hFile = CreateFile
-    (
-        fileName,               // ファイル名
-        GENERIC_READ,           // 読み込みアクセスモード
-        0,                      // 共有（なし）
-        NULL,                   // セキュリティ属性（継承しない）
-        OPEN_EXISTING,          // ファイルを開く方法
-        FILE_ATTRIBUTE_NORMAL,  // 属性とフラグ（設定なし）
-        NULL                    // 拡張属性（なし）
-    );
-
-    if (hFile != INVALID_HANDLE_VALUE)
-    {
-        // ファイルからステージ情報を読み込む
-        char buffer[100];
-        while (ReadLineFromFile(hFile, buffer, sizeof(buffer)))
-        {
-            int x, z, type, height;
-            if (sscanf_s(buffer, "%d %d %d %d", &x, &z, &type, &height) == 4)
-            {
-                // 読み込んだ情報をステージに設定
-                if (x >= 0 && x < SIZE_X && z >= 0 && z < SIZE_Z)
-                {
-                    table_[x][z].type_ = static_cast<BOX_TYPE>(type);
-                    table_[x][z].height_ = height;
-                }
-            }
-        }
-
-        // ファイルを閉じる
-        CloseHandle(hFile);
-    }
-}
-#endif
-
-//////バイナリファイルでセーブロード
-#if 1
+// バイナリファイルでセーブロード
 void Stage::Save()
 {
     char fileName[MAX_PATH] = "無題.map";  // ファイル名を格納する変数
@@ -435,7 +304,7 @@ void Stage::Save()
     FILE* file;
     if (fopen_s(&file, fileName, "wb") != 0)
     {
-        // ファイルを開けなかった場合のエラーハンドリングを行う
+        // ファイルを開けなかった場合エラー
         std::cerr << "ファイルを開けませんでした。" << std::endl;
         return;
     }
@@ -448,14 +317,13 @@ void Stage::Save()
             int blockInfo[2] = { table_[x][z].type_, table_[x][z].height_ };
             if (fwrite(blockInfo, sizeof(int), 2, file) != 2)
             {
-                // データの書き込みに失敗した場合のエラーハンドリングを行う
+                // 書き込みに失敗した場合エラー
                 std::cerr << "ファイルへの書き込みに失敗しました。" << std::endl;
                 fclose(file);
                 return;
             }
         }
     }
-
     // ファイルを閉じる
     fclose(file);
 }
@@ -485,12 +353,12 @@ void Stage::Load()
     FILE* file;
     if (fopen_s(&file, fileName, "rb") != 0)
     {
-        // ファイルを開けなかった場合のエラーハンドリングを行う
+        // ファイルを開けなかった場合エラー
         std::cerr << "ファイルを開けませんでした。" << std::endl;
         return;
     }
 
-    // ステージ情報をバイナリ形式でファイルから読み込む
+    // ステージ情報をバイナリ形式で読み込む
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
@@ -498,7 +366,7 @@ void Stage::Load()
             int blockInfo[2];
             if (fread(blockInfo, sizeof(int), 2, file) != 2)
             {
-                // データの読み込みに失敗した場合のエラーハンドリングを行う
+                // 読み込みに失敗した場合エラー
                 std::cerr << "ファイルからの読み込みに失敗しました。" << std::endl;
                 fclose(file);
                 return;
@@ -511,42 +379,7 @@ void Stage::Load()
     // ファイルを閉じる
     fclose(file);
 }
-#endif
 
-bool Stage::ReadLineFromFile(HANDLE hFile, char* buffer, DWORD bufferSize)
-{
-    if (hFile == INVALID_HANDLE_VALUE || buffer == nullptr || bufferSize == 0)
-    {
-        return false;
-    }
-
-    DWORD bytesRead = 0;
-    char ch = 0;
-    DWORD totalBytesRead = 0;
-
-    while (totalBytesRead < bufferSize - 1)
-    {
-        if (ReadFile(hFile, &ch, 1, &bytesRead, nullptr) && bytesRead == 1)
-        {
-            if (ch == '\n' || ch == '\r')
-            {
-                // 改行文字を読んだら終了
-                break;
-            }
-            buffer[totalBytesRead++] = ch;
-        }
-        else
-        {
-            // ファイルの終端に達した場合やエラーが発生した場合は終了
-            break;
-        }
-    }
-
-    // ヌル終端
-    buffer[totalBytesRead] = '\0';
-
-    return totalBytesRead > 0;
-}
 
 void Stage::ResetStage()
 {
@@ -572,33 +405,18 @@ void Stage::GenerateRandomHeightMap(unsigned int seed)
             double xCoord = static_cast<double>(x) / static_cast<double>(SIZE_X) * 3.0;
             double zCoord = static_cast<double>(z) / static_cast<double>(SIZE_Z) * 3.0;
 
-            double height = perlin.noise(xCoord, zCoord, 0.0) * SIZE_Y;
+            double height = perlin.noise(xCoord, zCoord, 0.0) * 10;
 
             // 高さを設定
             table_[x][z].height_ = static_cast<int>(height);
         }
     }
 }
-/*
-ただの乱数バージョン
-void Stage::GenerateRandomHeightMap()
-{
-    for (int x = 0; x < SIZE_X; x++)
-    {
-        for (int z = 0; z < SIZE_Z; z++)
-        {
-            // ランダムな高さを生成 (0 から SIZE_Y までの範囲)
-            int randomHeight = rand() % (SIZE_Y + 1);
 
-            // 高さを設定
-            table_[x][z].height_ = randomHeight;
-        }
-    }
-}*/
-
+// 地形全体を上げる
 void Stage::AllUp()
 {
-    // 地形全体の上げる
+
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
@@ -608,9 +426,9 @@ void Stage::AllUp()
     }
 }
 
+// 地形全体を下げる
 void Stage::AllDown()
 {
-    // 地形全体下げる
     for (int x = 0; x < SIZE_X; x++)
     {
         for (int z = 0; z < SIZE_Z; z++)
@@ -619,6 +437,21 @@ void Stage::AllDown()
             {
                 table_[x][z].height_--;
             }
+        }
+    }
+}
+
+// パーリンノイズ実行用
+void Stage::PerlinEXE()
+{
+    unsigned int seed = 12345;
+    GenerateRandomHeightMap(seed);
+    for (int x = 0; x < SIZE_X; x++)
+    {
+        for (int z = 0; z < SIZE_Z; z++)
+        {
+            if (table_[x][z].height_ < 0)
+                table_[x][z].height_ = 1;
         }
     }
 }
